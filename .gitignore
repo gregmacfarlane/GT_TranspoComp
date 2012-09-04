@@ -1,5 +1,24 @@
 .Rproj.user
 .Rhistory
 .RData
+<<<<<<< HEAD
 .DS_Store
 Example/figure/fig_diagnostics.pdf
+=======
+
+*.swp
+
+*.aux
+
+*.log
+
+Example/Example-concordance.tex
+
+Example/Example.tex
+
+Example/Rplots.pdf
+
+Example/fig_diagnostics.pdf
+
+.DS_Store
+>>>>>>> [.gitignore] More ignored files
