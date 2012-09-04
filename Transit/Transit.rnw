@@ -1,0 +1,12 @@
+\documentclass{article}
+
+\title{Transit Question}
+
+\begin{document}
+
+<<load_data>>=
+mydata <- read.csv("DATA/DATA.csv")
+@
+
+
+\end{document}
