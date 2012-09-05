@@ -1,20 +1,32 @@
 % Problem 5.6 from Meyer and Miller
+% Adapted for TRB Competition
+
 % Gravity Model
 clear
 
 %------- Trip Generation Inputs -----------%
 
+% Station [X1,X2,X3,X4,AM,Y1,Y2,Y3,Y4]
 % Productions Vector
-Prod = [100, 200, 100];
-
+Prod = [353,325,308,240,693,407,812,684,327];
 % Attractions Vector;
-Att = [200, 50, 150];
+Att = [341,334,289,240,692,423,787,714,329];
 
 % travel time Matrix;
-time = [2, 5, 4;...
-        5, 2, 3;...
-        4, 3, 2];
+time = [Inf,1,3,4,2,5,4,4,5;...
+        1,Inf,2,3,1,4,3,3,4;...
+        3,2,Inf,1,1,4,3,3,4;...
+        4,3,1,Inf,2,5,4,4,5;...
+        2,1,1,2,Inf,2,1,1,2;...
+        5,4,4,5,2,Inf,1,3,4;...
+        4,3,3,4,1,1,Inf,2,3;...
+        4,3,3,4,1,3,2,Inf,1;...
+        5,4,4,5,2,4,3,1,Inf]
 
+    % Assumptions:  Everyone travels (t[X1,X1]=Inf)
+    %               Adjacent nodes have t=1
+    %               transfer penalty    x=1
+    
 
 %------- Trip Distribution ---------------%
     
@@ -26,7 +38,7 @@ TOLERANCE = 1;
 
 % Convergence Conditions
 difference = Inf;
-Trips1 = zeros([3,3]);
+Trips1 = zeros([9,9]);
 Astar = Att; %initialize
 
 
@@ -37,8 +49,8 @@ disp('Adjusted Gravity Model')
 while difference > TOLERANCE
  
     % Calculate Trips from i to j
-    for i = 1:3
-        for j = 1:3
+    for i = 1:9
+        for j = 1:9
             Trips(i,j) = ( Prod(i) * Astar(j)*( time(i,j) )^(-b))/...
                     ( sum(Astar .* ( time (i,:) ).^-b ));
         end

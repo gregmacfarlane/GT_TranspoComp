@@ -22,3 +22,5 @@ Example/fig_diagnostics.pdf
 
 .DS_Store
 >>>>>>> [.gitignore] More ignored files
+
+*.m~
