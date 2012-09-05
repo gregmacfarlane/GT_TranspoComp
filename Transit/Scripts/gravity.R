@@ -44,7 +44,7 @@ gravity.model <- function(productions, attractions, cost.matrix, b, TOLERANCE) {
 		}
 		
 		# Update attractions
-		ASTAR1 = ASTAR * ( attractions / sum( TRIPS ))
+		ASTAR1 = ASTAR * ( attractions / colSums( TRIPS ))
 		ASTAR = ASTAR1
 	
 		# Calculate convergence condition
