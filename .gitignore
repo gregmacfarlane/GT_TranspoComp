@@ -24,3 +24,5 @@ Example/fig_diagnostics.pdf
 >>>>>>> [.gitignore] More ignored files
 
 *.m~
+
+Example/Example.synctex.gz

@@ -29,7 +29,7 @@ far more than its cost.
 
 \LaTeX\ is a free and open-source document processing system that is
 highly programmable and produces very attractive output (such as this
-document). Most of the top academic journals provide \LaTeX files so that
+document). Most of the top academic journals provide \LaTeX\ files so that
 authors do not need to worry about formatting rules, and some (for
 instance, all Elsevier publications) even accept \texttt{.tex} files directly.
 
@@ -124,11 +124,8 @@ apsrtable(lm.D9, lm.D90, model.names=c("Default", "No Intercept"),
 \end{table}
 
 To compile this document, you can simply push the "Compile PDF" button at 
-the top of the editor console in RStudio. You will get a prettier output
-if you type into the R console:
-\begin{verbatim}
-	knit2pdf("Example.rnw")
-\end{verbatim}
+the top of the editor console in RStudio.
+
 
 
 \end{document}
