@@ -119,7 +119,7 @@ the object's label.
 	\centering
 <<tab_comparison, echo=FALSE, results=tex>>=
 apsrtable(lm.D9, lm.D90, model.names=c("Default", "No Intercept"),
-					Sweave=TRUE, coef.rows=1)
+					Sweave=TRUE, coef.rows=1, stars="default")
 @
 \end{table}
 
