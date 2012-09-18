@@ -1,0 +1,6 @@
+\documentclass{article}
+
+\begin{document}
+This is the initial document.
+
+\end{document}
