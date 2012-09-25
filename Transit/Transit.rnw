@@ -1,12 +1,29 @@
 \documentclass{article}
 
 \title{Transit Question}
+\author{Georgia Institute of Technology}
 
 \begin{document}
+\maketitle
 
+
+\section{Introduction}
 <<load_data>>=
 mydata <- read.csv("DATA/DATA.csv")
 @
+
+
+\section{Literature}
+
+
+
+\section{Methodology}
+
+
+\section{Results}
+
+\section{Discussion}
+
 
 
 \end{document}
