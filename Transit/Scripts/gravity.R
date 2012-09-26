@@ -64,8 +64,8 @@ entropy.model <- function(productions, attractions, cost.matrix, b, TOLERANCE){
 
 # Create a cost matrix based on distance and transfer assumptions
 
-costmatrix <- function(distance, transfer) {
-	
+costMatrix <- function(distance, transfer) {
+	# Graph of distances between stations
 	d.matrix <- matrix(c(Inf,1,3,4,2,4,3,3,4,
 											 1,Inf,2,3,1,3,2,2,3,
 											 3,2,Inf,1,1,3,2,2,3,
@@ -74,9 +74,9 @@ costmatrix <- function(distance, transfer) {
 											 4,3,3,4,2,Inf,1,3,4,
 											 3,2,2,3,1,1,Inf,2,3,
 											 3,2,2,3,1,3,2,Inf,1,
-											 4,3,3,4,2,4,3,1,Inf)
-										 , 9, 9, TRUE)
-	
+											 4,3,3,4,2,4,3,1,Inf),
+										 nrow=9, ncol=9, TRUE)
+	# Matrix indicating whether a tranfer penalty should be applied
 	t.matrix <- matrix(c(0, 0, 0, 0, 0, 1, 1, 1, 1,
 											 0, 0, 0, 0, 0, 1, 1, 1, 1,
 											 0, 0, 0, 0, 0, 1, 1, 1, 1,
@@ -85,10 +85,10 @@ costmatrix <- function(distance, transfer) {
 											 1, 1, 1, 1, 0, 0, 0, 0, 0,
 											 1, 1, 1, 1, 0, 0, 0, 0, 0,
 											 1, 1, 1, 1, 0, 0, 0, 0, 0,
-											 1, 1, 1, 1, 0, 0, 0, 0, 0), 9, 9, TRUE)
-	
+											 1, 1, 1, 1, 0, 0, 0, 0, 0),
+										 nrow=9,ncol=9, TRUE)
+	# return weighted sum of both matrices
 	return(distance*d.matrix + transfer*t.matrix)
-	
 }
 
 
@@ -97,16 +97,3 @@ outputCleaner <- function(TRIPS){
 	
 	return(transfers)
 }
-
-
-cost.matrix <- matrix(c(Inf,1,3,4,2,5,4,4,5, 
-												1,Inf,2,3,1,4,3,3,4,
-												3,2,Inf,1,1,4,3,3,4,
-												4,3,1,Inf,2,5,4,4,5,
-												2,1,1,2,Inf,2,1,1,2,
-												5,4,4,5,2,Inf,1,3,4,
-												4,3,3,4,1,1,Inf,2,3,
-												4,3,3,4,1,3,2,Inf,1,
-												5,4,4,5,2,4,3,1,Inf), 
-											ncol=length(P), nrow=length(P)
-											)
