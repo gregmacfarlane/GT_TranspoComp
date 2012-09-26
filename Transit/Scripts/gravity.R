@@ -63,10 +63,34 @@ entropy.model <- function(productions, attractions, cost.matrix, b, TOLERANCE){
 }
 
 # Create a cost matrix based on distance and transfer assumptions
-costMatrix <- function(distance, transfer.penalty){
+
+costmatrix <- function(distance, transfer) {
 	
-	return(cost.matrix)
+	d.matrix <- matrix(c(Inf,1,3,4,2,4,3,3,4,
+											 1,Inf,2,3,1,3,2,2,3,
+											 3,2,Inf,1,1,3,2,2,3,
+											 4,3,1,Inf,2,4,3,3,4,
+											 2,1,1,2,Inf,2,1,1,2,
+											 4,3,3,4,2,Inf,1,3,4,
+											 3,2,2,3,1,1,Inf,2,3,
+											 3,2,2,3,1,3,2,Inf,1,
+											 4,3,3,4,2,4,3,1,Inf)
+										 , 9, 9, TRUE)
+	
+	t.matrix <- matrix(c(0, 0, 0, 0, 0, 1, 1, 1, 1,
+											 0, 0, 0, 0, 0, 1, 1, 1, 1,
+											 0, 0, 0, 0, 0, 1, 1, 1, 1,
+											 0, 0, 0, 0, 0, 1, 1, 1, 1,
+											 0, 0, 0, 0, 0, 0, 0, 0, 0,
+											 1, 1, 1, 1, 0, 0, 0, 0, 0,
+											 1, 1, 1, 1, 0, 0, 0, 0, 0,
+											 1, 1, 1, 1, 0, 0, 0, 0, 0,
+											 1, 1, 1, 1, 0, 0, 0, 0, 0), 9, 9, TRUE)
+	
+	return(distance*d.matrix + transfer*t.matrix)
+	
 }
+
 
 # Get the transfer volumes from a OD matrix
 outputCleaner <- function(TRIPS){
