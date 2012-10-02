@@ -61,16 +61,16 @@ document, and how to use other tools in \texttt{knitr}, I am going to run
 through a simple linear model. To include R chunks in the document, we
 use the following notation:
 \begin{verbatim}
-	<<chunk_name, options>>=
-	R code
-	@
+%	<<chunk_name, options>>=
+%	R code
+%	@
 \end{verbatim}
 
 So, to load an R package that I want to use in my analysis, I use the following command (you may need to install the ``apsrtable'' package):
 \begin{verbatim}
-	<<load_packages>>=
-	library(apsrtable) # pretty model output tables
-	@
+%	<<load_packages>>=
+% 	library(apsrtable) # pretty model output tables
+%	@
 \end{verbatim}
 <<load_packages>>=
 	library(apsrtable) # pretty model output tables
@@ -117,7 +117,7 @@ the object's label.
 	\caption{Model Comparison}
 	\label{tab:comparison}
 	\centering
-<<tab_comparison, echo=FALSE, results=tex>>=
+<<tab_comparison, echo=FALSE, results='asis'>>=
 apsrtable(lm.D9, lm.D90, model.names=c("Default", "No Intercept"),
 					Sweave=TRUE, coef.rows=1, stars="default")
 @

@@ -1,6 +1,6 @@
 # Function to execute a gravity model using the convergence method
 #		given in Meyer and Miller, chapter 5, problem 6.
-gravity.model <- function(productions, attractions, cost.matrix, b, TOLERANCE) {
+gravityModel <- function(productions, attractions, cost.matrix, b, TOLERANCE) {
 	
 	# Input Checks
 	# ==================================================================
