@@ -93,7 +93,19 @@ costMatrix <- function(distance, transfer) {
 
 
 # Get the transfer volumes from a OD matrix
-outputCleaner <- function(TRIPS){
+output.cleaner <- function(TRIPS)   {
+	
+	ws <- (TRIPS[1,6] + TRIPS[1,7] + TRIPS[2,6] + TRIPS[2,7])
+	wn <- (TRIPS[1,8] + TRIPS[1,9] + TRIPS[2,8] + TRIPS[2,9])
+	es <- (TRIPS[3,6] + TRIPS[3,7] + TRIPS[4,6] + TRIPS[4,7])
+	en <- (TRIPS[3,8] + TRIPS[3,9] + TRIPS[4,8] + TRIPS[4,9])
+	sw <- (TRIPS[6,1] + TRIPS[6,2] + TRIPS[7,1] + TRIPS[7,2])
+	se <- (TRIPS[6,3] + TRIPS[6,4] + TRIPS[7,3] + TRIPS[7,4])
+	nw <- (TRIPS[8,1] + TRIPS[8,2] + TRIPS[9,1] + TRIPS[9,2])
+	ne <- (TRIPS[8,3] + TRIPS[8,4] + TRIPS[9,3] + TRIPS[9,4])
+	
+	transfers <- c(ws, wn, es, en, sw, se, nw, nw)
 	
 	return(transfers)
+	
 }
