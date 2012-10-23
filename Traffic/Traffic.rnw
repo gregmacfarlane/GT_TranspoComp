@@ -75,7 +75,7 @@ TRB data analysis competition \sep traffic forecasting
 %==============================================================================
 \section{Model}
 <<loaddata>>=
-MyData <- read.csv("")
+MyData <- read.csv("./Source_Data/data_additional_April.csv")
 @
 %------------------------------------------------------------------------------
 \subsection{Estimation}
@@ -94,4 +94,9 @@ This project was executed as a training exercise on literate programming using
 R \citep{R}, \texttt{knitr} \citep{knitr}, and \LaTeX. The source code is available
 on GitHub as the \texttt{GT\_TranspoComp} project 
 (\href{https://github.com/gregmacfarlane/GT_TranspoComp}{link}).
+
+
+\section*{References}
+\bibliographystyle{elsarticle-num-names}
+\bibliography{bibliography}
 \end{document}
