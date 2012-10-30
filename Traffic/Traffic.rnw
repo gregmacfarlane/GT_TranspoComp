@@ -29,6 +29,11 @@ library(knitr)
 opts_chunk$set(echo=TRUE, cache=TRUE, cache.path='./cache/', autodep=TRUE)
 dep_auto()
 
+#packages used for presentation
+library(xtable)
+
+#packages used in the analysis
+library(quantmod)
 @
 %==============================================================================
 \begin{frontmatter}
@@ -76,13 +81,45 @@ TRB data analysis competition \sep traffic forecasting
 \section{Model}
 <<loaddata>>=
 MyData <- read.csv("./Source_Data/data_additional_April.csv")
+lanes <- c(1,2,3,4,6,7,8)
+
 # Convert timestamp
 MyData$TIMESTAMP <- as.POSIXct(strptime(MyData$TIMESTAMP, format="%m/%d/%y %H:%M"))
 @
 %------------------------------------------------------------------------------
 \subsection{Estimation}
+We estimate an autoregressive model for each lane, and present the coefficient estimates 
+in Table \ref{tab:AR1Coefficients}
+<<AR1Model>>=
+model1 <- lm(L101_volume ~ Lag(L101_volume, k=1), data=MyData)
+model2 <- lm(L102_volume ~ Lag(L102_volume, k=1), data=MyData)
+model3 <- lm(L103_volume ~ Lag(L103_volume, k=1), data=MyData)
+model4 <- lm(L104_volume ~ Lag(L104_volume, k=1), data=MyData)
+model6 <- lm(L106_volume ~ Lag(L106_volume, k=1), data=MyData)
+model7 <- lm(L107_volume ~ Lag(L107_volume, k=1), data=MyData)
+model8 <- lm(L108_volume ~ Lag(L108_volume, k=1), data=MyData)
+AR1models <- list(model1, model2, model3, model4, model6, model7, model8)
+@
 
+\begin{table}
+  \caption{Autoregressive Model Coefficients}
+  \label{tab:AR1Coefficients}
+  \begin{center}
+<<AR1Coefficients, results='asis'>>=
+AR1Coefs <- as.table(matrix(NA, ncol=length(AR1models), nrow=3))
+for(i in 1:length(AR1models)){
+  AR1Coefs[1:2,i] <- t(coef(AR1models[[i]]))
+  AR1Coefs[3, i] <- summary(AR1models[[i]])$r.squared
+  colnames(AR1Coefs)[i] <- paste("Lane ", lanes[i], sep="")
+}
+rownames(AR1Coefs) <- c("Intercept", "Lag", "$R^2$")
 
+coefs.x <- xtable(AR1Coefs)
+print(coefs.x, floating=FALSE, sanitize.rownames.function=function(x){x})
+
+@
+  \end{center}
+\end{table}
 
 %==============================================================================
 \section{Forecasting}
