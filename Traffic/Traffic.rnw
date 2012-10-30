@@ -76,6 +76,8 @@ TRB data analysis competition \sep traffic forecasting
 \section{Model}
 <<loaddata>>=
 MyData <- read.csv("./Source_Data/data_additional_April.csv")
+# Convert timestamp
+MyData$TIMESTAMP <- as.POSIXct(strptime(MyData$TIMESTAMP, format="%m/%d/%y %H:%M"))
 @
 %------------------------------------------------------------------------------
 \subsection{Estimation}
@@ -92,8 +94,9 @@ MyData <- read.csv("./Source_Data/data_additional_April.csv")
 \subsection*{A word on execution}
 This project was executed as a training exercise on literate programming using 
 R \citep{R}, \texttt{knitr} \citep{knitr}, and \LaTeX. The source code is available
-on GitHub as the \texttt{GT\_TranspoComp} project 
-(\href{https://github.com/gregmacfarlane/GT_TranspoComp}{link}).
+on GitHub as the 
+\href{https://github.com/gregmacfarlane/GT_TranspoComp}{\texttt{GT\_TranspoComp}}
+project.
 
 
 \section*{References}
