@@ -1,10 +1,80 @@
-\documentclass{article}
+\documentclass[review, authoryear]{elsarticle}
+\usepackage{fullpage}
 
-\title{Transit Question}
-\author{Georgia Institute of Technology}
+% remove Elsevier preprint footer
+\makeatletter
+\def\ps@pprintTitle{%
+ \let\@oddhead\@empty
+ \let\@evenhead\@empty
+ \def\@oddfoot{}%
+ \let\@evenfoot\@oddfoot}
+\makeatother
 
+%hyperrefs
+\usepackage{hyperref}
+
+% Math
+\usepackage{amsmath}
+
+% Color (for drafts)
+\usepackage{color}
+\usepackage[usenames, dvipsnames]{xcolor}
+
+
+
+%==============================================================================
 \begin{document}
-\maketitle
+<<setup, cache=FALSE, warning=FALSE, echo=FALSE>>=
+library(knitr)
+opts_chunk$set(echo=TRUE, cache=TRUE, cache.path='./cache/', autodep=TRUE)
+dep_auto()
+
+#packages used for presentation
+library(xtable)
+
+#packages used in the analysis
+
+#homegrown scripts
+source("./Scripts/gravity.R")
+@
+%==============================================================================
+\begin{frontmatter}
+\title{Random-Parameter Gravity Models and Transit Ridership: 
+				TRB data analysis competition}
+
+\author[gtcivil]{Candace Brakewood}
+  \ead{candace.brakewood@gatech.edu}
+\author[gtcivil]{Jamie M. Fischer}
+  \ead{jm.fischer@gatech.edu}
+\author[gtcivil]{Alex Poznanski}
+  \ead{alex.poznanski@gatech.edu}
+\author[gtcivil,gtecon]{Gregory S. Macfarlane\corref{cor1}} 
+  \ead{gregmacfarlane@gatech.edu}
+
+\address[gtcivil]{School of Civil and Environmental Engineering, Georgia Institute of
+Technology\\ 790 Atlantic Drive, Atlanta GA 30332-0355}
+\address[gtecon]{School of Economics, Georgia Institute of Technology\\ 221 Bobby
+Dodd Way, Atlanta, GA 30332}
+
+% make footnote text referenced above
+\cortext[cor1]{Corresponding author. Tel.: +1 801 616 9822}
+
+%% Abstract
+\begin{abstract}
+Traffic loop detectors are important tools for recording and monitoring vehicle
+flows along major routes in a region. The reliability of these detectors, 
+however, is such that certain important observations may be missing. In this 
+study, we employ an approach based on traffic flow theory and joined with
+time series econometrics to impute missing values, and make modest projections,
+from loop detector data in Athens, Greece.
+\end{abstract}
+
+% keywords environment
+\begin{keyword}% separate with \sep
+TRB data analysis competition \sep demand modeling \sep trip distribution 
+\end{keyword}
+\end{frontmatter}
+%==============================================================================
 
 
 \section{Introduction}
@@ -22,8 +92,21 @@ mydata <- read.csv("DATA/DATA.csv")
 
 \section{Results}
 
-\section{Discussion}
 
+
+\section{Discussion}
+\subsection*{A word on execution}
+This project was executed as a training exercise on literate programming using 
+R \citep{R}, \texttt{knitr} \citep{knitr}, and \LaTeX. The source code is available
+on GitHub as the 
+\href{https://github.com/gregmacfarlane/GT_TranspoComp}{\texttt{GT\_TranspoComp}}
+project.
+
+
+\section*{References}
+\bibliographystyle{elsarticle-num-names}
+\bibliography{bibliography}
+\end{document}
 
 
 \end{document}
