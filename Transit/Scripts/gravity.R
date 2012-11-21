@@ -104,8 +104,15 @@ output.cleaner <- function(TRIPS)   {
 	nw <- (TRIPS[8,1] + TRIPS[8,2] + TRIPS[9,1] + TRIPS[9,2])
 	ne <- (TRIPS[8,3] + TRIPS[8,4] + TRIPS[9,3] + TRIPS[9,4])
 	
-	transfers <- c(ws, wn, es, en, sw, se, nw, nw)
+	transfers <- c(ws, wn, es, en, sw, se, nw, ne)
 	
 	return(transfers)
 	
 }
+
+# Loop over friction factor #
+for(i in bval){
+	grav <- gravityModel(DATA$ALIGHT, DATA$BOARD, costMatrix(1,1), i, 1E-9)
+	output <- output.cleaner(grav)
+}
+
