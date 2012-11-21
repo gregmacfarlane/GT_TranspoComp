@@ -12,6 +12,14 @@ Example/figure/fig_diagnostics.pdf
 
 *.log
 
+*.bbl
+
+*.spl
+
+*.synctex.gz
+
+
+
 Example/Example-concordance.tex
 
 Example/Example.tex
