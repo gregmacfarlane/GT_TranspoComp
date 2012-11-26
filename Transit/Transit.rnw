@@ -211,16 +211,24 @@ legend("topright", c("Distance [miles]", "Speed [mph]",
 
 
 <<MAINLOOP>>=
-#output.list <- list()
-#for(i in 1:200){
-#	set.seed(i)
-#	TravelTime <- costRandomMatrix(meandist= mean.Distance, sd.Distance= sd.Distance, meantransfer=)
-#	output.list[[i]] <- output.cleaner(gravityModel(Prods, Attrs,
-#																									TravelTime, 1, 1e-9))
-#}
+output.list <- list()
+for(i in 1:20){
+	set.seed(i) # change random seed with each iteration
+	TravelTime <- costRandomMatrix(meandist= mean.Distance, sddist= sd.Distance, 
+																 meantransfer=mean.Transfer, sdtransfer= sd.Transfer, 
+																 mintransfer=min.Transfer, maxtransfer=max.Transfer, 
+																 meanmultiplier=mean.TimeMultiplier, 
+																 sdmultiplier=sd.TimeMulitiplier, 
+																 meanspeed=mean.Speed, sdspeed=sd.Speed)
+	output.list[[i]] <- output.cleaner(gravityModel(Prods, Attrs,
+																									TravelTime, 1, 1e-9))
+}
+
 
 @
 \section{Results}
+
+
 
 
 
