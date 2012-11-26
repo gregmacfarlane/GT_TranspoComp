@@ -31,6 +31,7 @@ dep_auto()
 
 #packages used for presentation
 library(xtable)
+library(apsrtable)
 
 #packages used in the analysis
 library(quantmod)
@@ -83,15 +84,46 @@ TRB data analysis competition \sep traffic forecasting
 MyData <- read.csv("./Source_Data/data_additional_April.csv")
 lanes <- c(1,2,3,4,6,7,8)
 
+
 # Convert timestamp
 MyData$TIMESTAMP <- as.POSIXct(strptime(MyData$TIMESTAMP, format="%m/%d/%y %H:%M"))
+
+# change 255 for missing
+
+# critical occupancy dummy
+MyData$L101_crit <- ifelse(MyData$L101_occupancy>20, 1, 0)
+
+# throw away volume outliers
+MyData$L101_volume<- ifelse(MyData$L101_volume>100, NA, MyData$L101_volume)
+
 @
 %------------------------------------------------------------------------------
 \subsection{Estimation}
 We estimate an autoregressive model for each lane, and present the coefficient estimates 
 in Table \ref{tab:AR1Coefficients}
+
+<<differentAR1L1>>=
+model1lag <- lm(L101_volume ~ Lag(L101_volume, k=1),
+                data=MyData)
+model1lagc <- lm(L101_volume ~ Lag(L101_volume, k=1)+ L101_crit,
+                data=MyData)
+model1int <- lm(L101_volume ~ Lag(L101_volume, k=1)+ L101_crit + Lag(L101_volume, k=1):L101_crit,
+                data=MyData)
+model2lag <- lm(L101_volume ~ Lag(L101_volume, k=1):L101_crit + Lag(L101_volume, k=1)+ L101_crit + 
+                Lag(L101_volume, k=2), data=MyData)
+@
+
+\begin{table}
+  \caption{Loop1 models}
+<<tabLoop1Models>>=
+apsrtable(model1lag, model1lagc, model1int, model2lag,
+          Sweave=TRUE, coefrows=1, digits=4)
+@
+\end{table}
+
 <<AR1Model>>=
-model1 <- lm(L101_volume ~ Lag(L101_volume, k=1), data=MyData)
+model1 <- lm(L101_volume ~ Lag(L101_volume, k=1):L101_crit + Lag(L101_volume, k=1)+ L101_crit +
+  Lag(L101_volume, k=960), data=MyData)
 model2 <- lm(L102_volume ~ Lag(L102_volume, k=1), data=MyData)
 model3 <- lm(L103_volume ~ Lag(L103_volume, k=1), data=MyData)
 model4 <- lm(L104_volume ~ Lag(L104_volume, k=1), data=MyData)
@@ -100,6 +132,8 @@ model7 <- lm(L107_volume ~ Lag(L107_volume, k=1), data=MyData)
 model8 <- lm(L108_volume ~ Lag(L108_volume, k=1), data=MyData)
 AR1models <- list(model1, model2, model3, model4, model6, model7, model8)
 @
+
+
 
 \begin{table}
   \caption{Autoregressive Model Coefficients}
@@ -120,6 +154,57 @@ print(coefs.x, floating=FALSE, sanitize.rownames.function=function(x){x})
 @
   \end{center}
 \end{table}
+
+<<AR2Model>>=
+model21 <- lm(L101_volume ~ Lag(L101_volume, k=1) + Lag(L101_volume, k=2), data=MyData)
+model22 <- lm(L102_volume ~ Lag(L102_volume, k=1) + Lag(L102_volume, k=2), data=MyData)
+model23 <- lm(L103_volume ~ Lag(L103_volume, k=1) + Lag(L103_volume, k=2), data=MyData)
+model24 <- lm(L104_volume ~ Lag(L104_volume, k=1) + Lag(L104_volume, k=2) ,data=MyData)
+model26 <- lm(L106_volume ~ Lag(L106_volume, k=1) + Lag(L106_volume, k=2), data=MyData)
+model27 <- lm(L107_volume ~ Lag(L107_volume, k=1) + Lag(L107_volume, k=2), data=MyData)
+model28 <- lm(L108_volume ~ Lag(L108_volume, k=1) + Lag(L108_volume, k=2), data=MyData)
+AR2models <- list(model21, model22, model23, model24, model26, model27, model28)
+@
+
+
+
+\begin{table}
+  \caption{Autoregressive  2 Model Coefficients}
+  \label{tab:AR2Coefficients}
+  \begin{center}
+<<AR2Coefficients, results='asis'>>=
+AR2Coefs <- as.table(matrix(NA, ncol=length(AR1models), nrow=4))
+for(i in 1:length(AR1models)){
+  AR2Coefs[1:3,i] <- t(coef(AR2models[[i]]))
+  AR2Coefs[4, i] <- summary(AR2models[[i]])$r.squared
+  colnames(AR1Coefs)[i] <- paste("Lane ", lanes[i], sep="")
+}
+rownames(AR2Coefs) <- c("Intercept", "Lag", "Lag-2", "$R^2$")
+
+coefs.x <- xtable(AR2Coefs)
+print(coefs.x, floating=FALSE, sanitize.rownames.function=function(x){x})
+@
+  \end{center}
+\end{table}
+
+<<>>=
+plot(MyData$L101_occupancy[3*(1:960)], MyData$L101_volume[3*(1:960)],
+     main="Day 3, Loop 1")
+plot(MyData$L102_occupancy[3*(1:960)], MyData$L102_volume[3*(1:960)],
+     main="Day 3, Loop 2", ylim=c(0,100))
+plot(MyData$L103_occupancy[3*(1:960)], MyData$L103_volume[3*(1:960)],
+     main="Day 3, Loop 3", ylim=c(0,100))
+plot(MyData$L104_occupancy[10*(1:960)], MyData$L104_volume[10*(1:960)],
+     main="Day 3, Loop 4", ylim=c(0,100))
+plot(MyData$L106_occupancy[3*(1:960)], MyData$L106_volume[3*(1:960)],
+     main="Day 3, Loop 6", ylim=c(0,100))
+plot(MyData$L107_occupancy[3*(1:960)], MyData$L107_volume[3*(1:960)],
+     main="Day 3, Loop 7", ylim=c(0,100))
+plot(MyData$L108_occupancy[3*(1:960)], MyData$L108_volume[3*(1:960)],
+     main="Day 3, Loop 8", ylim=c(0,100))
+
+@
+
 
 %==============================================================================
 \section{Forecasting}

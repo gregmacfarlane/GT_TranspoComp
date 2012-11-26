@@ -1,0 +1,8 @@
+loaddata	MyData	lanes
+AR1Model	AR1models	model1	model2	model3	model4	model6	model7	model8
+AR1Coefficients	AR1Coefs	coefs.x	i
+AR2Model	AR2models	model21	model22	model23	model24	model26	model27	model28
+AR2Coefficients	AR1Coefs	AR2Coefs	coefs.x	i
+differentAR1L1	model1int	model1lag	model1lagc	model2lag
+tabLoop1Models
+unnamed-chunk-1

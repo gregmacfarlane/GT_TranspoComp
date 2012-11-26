@@ -1,0 +1,8 @@
+loaddata	$	$<-	>	as.POSIXct	c	ifelse	read.csv	strptime
+AR1Model	MyData	list	lm	~
+AR1Coefficients	$	AR1models	[<-	[[	as.table	c	coef	colnames	colnames<-	for	lanes	length	matrix	paste	print	rownames<-	summary	t	xtable
+AR2Model	MyData	list	lm	~
+AR2Coefficients	$	AR1models	AR2models	[<-	[[	as.table	c	coef	colnames	colnames<-	for	lanes	length	matrix	paste	print	rownames<-	summary	t	xtable
+differentAR1L1	MyData	lm	~
+tabLoop1Models	apsrtable	model1int	model1lag	model1lagc	model2lag
+unnamed-chunk-1	$	(	MyData	c	plot
