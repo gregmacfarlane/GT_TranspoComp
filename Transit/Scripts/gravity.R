@@ -91,6 +91,42 @@ costMatrix <- function(distance, transfer) {
 	return(distance*d.matrix + transfer*t.matrix)
 }
 
+# Function for random cost matrix
+costRandomMatrix <- function(meandist = -0.5, sddist =0.5, 
+														 meantransfer = 1, sdtransfer = 0.5,
+														 timemultiplier= 2.5) {
+	# set random parameters
+	random.transfer <- matrix(rlnorm(81, meanlog= meantransfer, 
+																	 sdlog = sdtransfer), nrow=9, ncol=9)
+	random.distance <- rlnorm(8, meanlog= meandist, sdlog=sddist)
+	
+	
+	# Graph of distances between stations
+	d.matrix <- matrix(c(Inf,1,3,4,2,4,3,3,4,
+											 1,Inf,2,3,1,3,2,2,3,
+											 3,2,Inf,1,1,3,2,2,3,
+											 4,3,1,Inf,2,4,3,3,4,
+											 2,1,1,2,Inf,2,1,1,2,
+											 4,3,3,4,2,Inf,1,3,4,
+											 3,2,2,3,1,1,Inf,2,3,
+											 3,2,2,3,1,3,2,Inf,1,
+											 4,3,3,4,2,4,3,1,Inf),
+										 nrow=9, ncol=9, TRUE)
+	# Matrix indicating whether a tranfer penalty should be applied
+	t.matrix <- matrix(c(0, 0, 0, 0, 0, 1, 1, 1, 1,
+											 0, 0, 0, 0, 0, 1, 1, 1, 1,
+											 0, 0, 0, 0, 0, 1, 1, 1, 1,
+											 0, 0, 0, 0, 0, 1, 1, 1, 1,
+											 0, 0, 0, 0, 0, 0, 0, 0, 0,
+											 1, 1, 1, 1, 0, 0, 0, 0, 0,
+											 1, 1, 1, 1, 0, 0, 0, 0, 0,
+											 1, 1, 1, 1, 0, 0, 0, 0, 0,
+											 1, 1, 1, 1, 0, 0, 0, 0, 0),
+										 nrow=9,ncol=9, TRUE)
+	# return weighted sum of both matrices
+	return(distance*d.matrix + transfer*t.matrix)
+}
+
 
 # Get the transfer volumes from a OD matrix
 output.cleaner <- function(TRIPS)   {
