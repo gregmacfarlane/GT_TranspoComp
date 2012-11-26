@@ -157,7 +157,7 @@ costRandomMatrix <- function(meandist = -0.5, sddist =0.5,
 	
 	
 	# return sum of both matrices
-	return(traveltime + timemultiplier * transfertime)
+	return(traveltime + time.multiplier * transfertime)
 }
 
 
