@@ -212,27 +212,52 @@ legend("topright", c("Distance [miles]", "Speed [mph]",
 
 <<MAINLOOP>>=
 output.list <- list()
-for(i in 1:20){
+for(i in 1:1000){
 	set.seed(i) # change random seed with each iteration
 	TravelTime <- costRandomMatrix(meandist= mean.Distance, sddist= sd.Distance, 
 																 meantransfer=mean.Transfer, sdtransfer= sd.Transfer, 
 																 mintransfer=min.Transfer, maxtransfer=max.Transfer, 
 																 meanmultiplier=mean.TimeMultiplier, 
-																 sdmultiplier=sd.TimeMulitiplier, 
+																 sdmultiplier=sd.TimeMultiplier, 
 																 meanspeed=mean.Speed, sdspeed=sd.Speed)
 	output.list[[i]] <- output.cleaner(gravityModel(Prods, Attrs,
 																									TravelTime, 1, 1e-9))
 }
 
-
+output.matrix <- do.call(rbind, output.list)
 @
 \section{Results}
 
 
 
+\begin{table}
+	\caption{Transfers by Direction}
+	\label{tab:transfers}
+	\begin{center}
+<<tab_transfers, echo=FALSE, results='asis'>>=
+dirs <- c("W-S", "W-N", "E-S", "E-N", "S-W", "S-E", "N-W", "N-E")
+mins <- vector("numeric",length=8)
+maxs <- vector("numeric",length=8)
+sdev <- vector("numeric",length=8)
+avgs <- vector("numeric",length=8)
 
 
+for(i in 1:8){
+	mins[i] <- min(output.matrix[,i])
+	maxs[i] <- max(output.matrix[,i])
+	sdev[i] <- sd(output.matrix[,i])
+	avgs[i] <- mean(output.matrix[,i])
+}
 
+outputTable <- t(cbind(mins, maxs, sdev, avgs))
+colnames(outputTable) <- dirs
+rownames(outputTable) <- c("Minimum", "Maximum", "Std. Dev", "Mean")
+
+OUTXTABLE <- xtable(outputTable, caption = NULL, label=NULL )
+print(OUTXTABLE, floating=FALSE)
+@
+	\end{center}
+\end{table}
 
 
 
