@@ -93,7 +93,10 @@ mydata <- read.csv("DATA/DATA.csv")
 \begin{figure}
 <<fig_lognormal, fig.keep='last'>>=
 x <- seq(0,4,0.01)
-y <- dlnorm(x,meanlog=-0.5,sdlog=0.5)
+y <- rlnorm(100,meanlog=-0.5,sdlog=0.2)
+mean(y)
+min(y)
+max(y)
 plot(x,y, xlab="Value", ylab="Density")
 
 
