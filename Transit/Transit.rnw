@@ -61,17 +61,24 @@ Dodd Way, Atlanta, GA 30332}
 
 %% Abstract
 \begin{abstract}
-Traffic loop detectors are important tools for recording and monitoring vehicle
-flows along major routes in a region. The reliability of these detectors, 
-however, is such that certain important observations may be missing. In this 
-study, we employ an approach based on traffic flow theory and joined with
-time series econometrics to impute missing values, and make modest projections,
-from loop detector data in Athens, Greece.
+Transfers are an integral element of urban transit systems because they enable
+increased network coverage.  Despite their necessity, passengers often dislike 
+transferring due to various factors such as increased travel time, decreased reliability, 
+lack of infrastructure at transfer facilities, etc.  In this paper, we aim to estimate 
+the transfer volume at the hub in a small radial transit network, and we take into
+account these various factors to better understand their potential impacts on transfer 
+behavior.  Our overall approach is based on the well-known gravity model from the urban 
+transportation literature.  The variables used in this analysis are grounded in behavioral
+literature pertaining to transit network design, transfer penalties, and friction factors
+in public transportation.  These factors are analyzed in a novel approach that uses random
+parameters.  The results of the analysis show a range of transfer volumes from XX to YY,
+depending on the conditions mentioned above.
 \end{abstract}
 
 % keywords environment
 \begin{keyword}% separate with \sep
-TRB data analysis competition \sep demand modeling \sep trip distribution 
+TRB data analysis competition \sep trip distribution \sep gravity model \sep transfer penalty
+\sep public transit
 \end{keyword}
 \end{frontmatter}
 %==============================================================================
@@ -92,14 +99,14 @@ mydata <- read.csv("DATA/DATA.csv")
 % Make lognormal distribution graph
 \begin{figure}
 <<fig_lognormal, fig.keep='last'>>=
-x <- seq(0,4,0.01)
-y <- rlnorm(100,meanlog=-0.5,sdlog=0.2)
-mean(y)
-min(y)
-max(y)
+x <- seq(0,30,0.01)
+y <- dlnorm(x,meanlog=2,sdlog=0.5)
 plot(x,y, xlab="Value", ylab="Density")
 
-
+d <- rlnorm(2000, meanlog=2, sdlog=0.5)
+mean(d)
+min(d)
+max(d)
 @
 
 \section{Results}
