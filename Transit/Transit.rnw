@@ -91,23 +91,39 @@ mydata <- read.csv("DATA/DATA.csv")
 
 
 \section{Literature}
-
+The gravity model has been in existence for over 100 years, and it is one of 
+the most common models used to model trip distributions used in urban transportation 
+planning \citep{Meyer2000}.  A general gravity model is
+\begin{equation}\label{eq:generalGravity}
+T_{ij} = \dfrac{P_i [ A_j f_{ij} k_{ij}]}
+							 {\sum_{n=1}^m A_j f_{ij} k_{ij} }
+\end{equation}
+where $T_{ij}$ are the estimated trips between discrete zones $i$ and $j$, $P_i$ are
+the produced trips at $i$, $A_j$ are the trips attracted to zone $j$, $f$ is a function
+of the travel disutility (time, distance, or cost) between $i$ and $j$, and $k_{ij}$ 
+is a {\em post-hoc} adjustment factor. 
 
 
 \section{Methodology}
+For this study, we use the specific model
+\begin{equation}\label{eq:mygravity}
+T_{ij} = \dfrac{P_i A_j t_{ij}^{-b}}
+							 {\sum_{j=1}^N A_j t_{ij}^{-b}}
+\end{equation}
+where $f$ is simply the travel time between $i$ and $j$ with an exponential friction factor
+$b$ that ensures non-linear marginal cost as the absolute cost increases. We replace the 
+adjustment factor $k$ with an iterative process that incrementally balances the model's
+predicted attractions with the starting values.
 
-% Make lognormal distribution graph
+
+% Make distribution graph
 \begin{figure}
-<<fig_lognormal, fig.keep='last'>>=
+<<fig_lognormal, fig.keep='last', dev='tikz'>>=
 x <- seq(0,30,0.01)
 y <- dlnorm(x,meanlog=2,sdlog=0.5)
 plot(x,y, xlab="Value", ylab="Density")
-
-d <- rlnorm(2000, meanlog=2, sdlog=0.5)
-mean(d)
-min(d)
-max(d)
 @
+\end{figure}
 
 \section{Results}
 
