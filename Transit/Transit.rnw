@@ -31,8 +31,10 @@ dep_auto()
 
 #packages used for presentation
 library(xtable)
+library(RColorBrewer)
 
 #packages used in the analysis
+library(msm)
 
 #homegrown scripts
 source("./Scripts/gravity.R")
@@ -86,7 +88,9 @@ TRB data analysis competition \sep trip distribution \sep gravity model \sep tra
 
 \section{Introduction}
 <<load_data>>=
-mydata <- read.csv("DATA/DATA.csv")
+MyData <- read.csv("DATA/DATA.csv")
+Prods <- MyData$BOARD
+Attrs <- MyData$ALIGHT
 @
 
 
@@ -158,7 +162,21 @@ pdf.Speed <- dnorm(x, mean.Speed, sd.Speed)
 % ----------------------------------------------------------------------------
 \subsection{Transfer Penalty}
 <<transferPenalty>>=
+mean.Transfer <- 10
+sd.Transfer <- 3
+min.Transfer <- 2
+max.Transfer <- 15
 
+pdf.Transfer <- dtnorm(x, mean.Transfer, sd.Transfer, min.Transfer, max.Transfer)
+@
+
+\subsubsection{Time Multiplier}
+
+<<timemultiplier>>=
+mean.TimeMultiplier <- 2.5
+sd.TimeMultiplier <- 1
+
+pdf.TimeMultiplier <- dtnorm(x, mean.TimeMultiplier, sd.TimeMultiplier, lower=1.1)
 @
 
 % ----------------------------------------------------------------------------
@@ -166,16 +184,45 @@ pdf.Speed <- dnorm(x, mean.Speed, sd.Speed)
 
 % Make distribution graph
 \begin{figure}
-<<fig_lognormal, fig.keep='last', dev='tikz'>>=
+<<fig_lognormal, fig.keep='last', echo=FALSE, dev='tikz'>>=
+plot(c(), c(), ylim=c(0,0.5), xlim = c(0,25),
+		 xlab="Value", ylab="Density")
 
-@
-speeddist <- 
+figcolors <- brewer.pal(4, "Set1")
+linetypes <- c("solid", "dashed", "dotted", "dotdash")	
+
+# Distance
+lines(x, pdf.Distance, col=figcolors[1], lwd=2, lty=linetypes[1])
+# Speed
+lines(x, pdf.Speed, col=figcolors[2], lwd=2, lty=linetypes[2])
+# Transfer Penalty
+lines(x, pdf.Transfer, col=figcolors[3], lwd=2, lty=linetypes[3])
+# Time Multiplier
+lines(x, pdf.TimeMultiplier, col=figcolors[4], lwd=2, lty=linetypes[4])
+
+legend("topright", c("Distance [miles]", "Speed [mph]", 
+										 "Transfer Time [minutes]", "Wait Time Multiplier"),
+			 col=figcolors, lwd=2, bty="n", lty=linetypes)
+
 @
 	\caption{Probability density functions of random parameters used in the analysis.}
 	\label{fig:pdfs}
 \end{figure}
 
+
+<<MAINLOOP>>=
+#output.list <- list()
+#for(i in 1:200){
+#	set.seed(i)
+#	TravelTime <- costRandomMatrix(meandist= mean.Distance, sd.Distance= sd.Distance, meantransfer=)
+#	output.list[[i]] <- output.cleaner(gravityModel(Prods, Attrs,
+#																									TravelTime, 1, 1e-9))
+#}
+
+@
 \section{Results}
+
+
 
 
 
