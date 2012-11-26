@@ -88,22 +88,19 @@ costMatrix <- function(distance, transfer) {
 
 # Function for random cost matrix
 costRandomMatrix <- function(meandist = -0.5, sddist =0.5, 
-														 meantransfer = 2, sdtransfer = 0.5,
+														 meantransfer = 10, sdtransfer = 3,
 														 mintransfer = 2, maxtransfer = 15,
 														 meanmultiplier = 2.5, sdmultiplier = 1,
 														 meanspeed=20.3, sdspeed = 5.296) {
 	
 	#===== set random parameters ==========================================================
 	# transfer time
-	random.transfer <- matrix(rlnorm(81, meanlog= meantransfer, 
-																	 sdlog = sdtransfer), nrow=9, ncol=9)
-		# cap and floor transfer times
-		random.transfer <- ifelse(random.transfer > maxtransfer, maxtransfer, random.transfer)
-		random.transfer <- ifelse(random.transfer < mintransfer, mintransfer, random.transfer)
+	random.transfer <- matrix(rtnorm(81,meantransfer, sdtransfer, 
+																	 mintransfer, maxtransfer), nrow=9, ncol=9)
+
 	
 	# time perception multiplier
-	time.multiplier <- rnorm(1, meanmultiplier, sdmultiplier)
-	time.multiplier <- ifelse(time.multiplier < 1.1, 1.1, time.multiplier)
+	time.multiplier <- rtnorm(1, meanmultiplier, sdmultiplier, 1.1)
 	
 	# distance between stations
 	rdist <- rlnorm(8, meanlog= meandist, sdlog=sddist)
