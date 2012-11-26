@@ -103,8 +103,9 @@ the produced trips at $i$, $A_j$ are the trips attracted to zone $j$, $f$ is a f
 of the travel disutility (time, distance, or cost) between $i$ and $j$, and $k_{ij}$ 
 is a {\em post-hoc} adjustment factor. 
 
-
-\section{Methodology}
+% ============================================================================
+\section{Methodology} \label{sec:methodology}
+% ----------------------------------------------------------------------------
 For this study, we use the specific model
 \begin{equation}\label{eq:mygravity}
 T_{ij} = \dfrac{P_i A_j t_{ij}^{-b}}
@@ -113,19 +114,70 @@ T_{ij} = \dfrac{P_i A_j t_{ij}^{-b}}
 where $f$ is simply the travel time between $i$ and $j$ with an exponential friction factor
 $b$ that ensures non-linear marginal cost as the absolute cost increases. We replace the 
 adjustment factor $k$ with an iterative process that incrementally balances the model's
-predicted attractions with the starting values.
+predicted attractions with the starting values. 
+
+The travel time is an aggregate function of several parameters including the distance 
+between stations, the speed of the rail system, the potential transfer wait time, and the
+perceived disutility of that wait time. We create these parameters randomly, based on 
+assumptions derived from real-world empirics and discussed below. Probability density 
+functions of our assumed distributions are given in Figure \ref{fig:pdfs}.
+<<values>>=
+# x-values for pdf graphs
+x <- seq(0, 30, 0.01)
+@
+
+% ----------------------------------------------------------------------------
+\subsection{Friction Factor}
+<<frictionfactor>>=
+b <- 1.1
+@
+
+% ----------------------------------------------------------------------------
+\subsection{Distance between Stations}
+<<stationDistance>>=
+mean.Distance <- -0.5
+sd.Distance = 0.5
+
+pdf.Distance <- dlnorm(x, mean.Distance, sd.Distance)
+@
+
+\subsubsection{Travel Speed}
+<<travelSpeed>>=
+miles <- c(1337287,8812902,10673045,1178487,3269163,11038342,3897598,1102253,
+					1746631,991834,37631084,607058,938103,3303028,598190)
+speeds <- c(21.99,35.70,24.61,28.24,25.77,18.30,16.41,24.52,18.47,29.00,18.17,
+						20.51,19.84,19.44,18.77)
+mean.Speed <- weighted.mean(speeds, miles)
+sd.Speed <- sd(speeds)
+
+pdf.Speed <- dnorm(x, mean.Speed, sd.Speed)
+@
+
+
+
+% ----------------------------------------------------------------------------
+\subsection{Transfer Penalty}
+<<transferPenalty>>=
+
+@
+
+% ----------------------------------------------------------------------------
 
 
 % Make distribution graph
 \begin{figure}
 <<fig_lognormal, fig.keep='last', dev='tikz'>>=
-x <- seq(0,30,0.01)
-y <- dlnorm(x,meanlog=2,sdlog=0.5)
-plot(x,y, xlab="Value", ylab="Density")
+
 @
+speeddist <- 
+@
+	\caption{Probability density functions of random parameters used in the analysis.}
+	\label{fig:pdfs}
 \end{figure}
 
 \section{Results}
+
+
 
 
 
