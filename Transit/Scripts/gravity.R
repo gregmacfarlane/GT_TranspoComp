@@ -52,7 +52,7 @@ gravityModel <- function(productions, attractions, cost.matrix, b, TOLERANCE) {
 		TRIPS1 = TRIPS
 	
 	}
-	print(paste("Iterations: ", iteration, sep=""))
+	#print(paste("Iterations: ", iteration, sep=""))
 	return(TRIPS)
 }
 
