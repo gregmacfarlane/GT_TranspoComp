@@ -56,11 +56,6 @@ gravityModel <- function(productions, attractions, cost.matrix, b, TOLERANCE) {
 	return(TRIPS)
 }
 
-# Apply the Entropy model to calculate a trips matrix
-entropy.model <- function(productions, attractions, cost.matrix, b, TOLERANCE){
-	
-	return(TRIPS)
-}
 
 # Create a cost matrix based on distance and transfer assumptions
 
