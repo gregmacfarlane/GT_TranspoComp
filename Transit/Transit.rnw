@@ -24,7 +24,7 @@
 
 %==============================================================================
 \begin{document}
-<<setup, cache=FALSE, warning=FALSE, echo=FALSE>>=
+<<setup, cache=FALSE, warning=FALSE, message=FALSE, error=FALSE, echo=FALSE>>=
 library(knitr)
 opts_chunk$set(echo=TRUE, cache=TRUE, cache.path='./cache/', autodep=TRUE)
 dep_auto()
@@ -160,12 +160,7 @@ x <- seq(0, 30, 0.01)
 
 % ----------------------------------------------------------------------------
 \subsection{Friction Factor}
-<<frictionfactor>>=
-mean.b <- 1.7
-sd.b <- 0.4
 
-
-@
 
 % ----------------------------------------------------------------------------
 \subsection{Distance between Stations}
@@ -286,16 +281,25 @@ The final product of our analysis the shown in the following graph.  This graph 
 
 
 \begin{figure}
-<<outputdensities, fig.keep='high', dev='tik'>>=
+<<outputdensities, echo=FALSE, fig.keep='high', dev='tikz'>>=
+plot(c(), c(), ylim=c(0,0.03), xlim = c(0,100),
+		 xlab="Value", ylab="Density")
+
 figcolors <- brewer.pal(8, "Set1")
 maximum.pts <- vector("numeric", )
 
-for(i in figcolors){
+for(i in 1:length(figcolors)){
 	X <- bkde(output.matrix[,i])
-	
+	lines(X, col=figcolors[i], lwd=2)
 }
-@
 
+dirs <- c("W-S", "W-N", "E-S", "E-N", "S-W", "S-E", "N-W", "N-E")
+
+legend("topright", dirs, col=figcolors, lwd=2)
+
+@
+	\caption{Probability densities of predicted transfer volume.}
+	\label{fig:outputdensities}
 \end{figure}
 
 
