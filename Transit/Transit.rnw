@@ -35,6 +35,7 @@ library(RColorBrewer)
 
 #packages used in the analysis
 library(msm)
+library(KernSmooth)
 
 #homegrown scripts
 source("./Scripts/gravity.R")
@@ -133,17 +134,22 @@ x <- seq(0, 30, 0.01)
 % ----------------------------------------------------------------------------
 \subsection{Friction Factor}
 <<frictionfactor>>=
-b <- 1.1
+mean.b <- 1.7
+sd.b <- 0.4
+
+
 @
 
 % ----------------------------------------------------------------------------
 \subsection{Distance between Stations}
 <<stationDistance>>=
-mean.Distance <- -0.5
+mean.Distance <- -0.6
 sd.Distance = 0.5
 
 pdf.Distance <- dlnorm(x, mean.Distance, sd.Distance)
 @
+
+We assume that the distance between stations has a lognormal dist with mean \Sexpr{mean.Distance}.
 
 \subsubsection{Travel Speed}
 <<travelSpeed>>=
@@ -162,16 +168,15 @@ pdf.Speed <- dnorm(x, mean.Speed, sd.Speed)
 % ----------------------------------------------------------------------------
 \subsection{Transfer Penalty}
 <<transferPenalty>>=
-mean.Transfer <- 10
-sd.Transfer <- 3
-min.Transfer <- 2
-max.Transfer <- 15
+mean.Transfer <- 5
+sd.Transfer <- 2
+min.Transfer <- 0
+max.Transfer <- 10
 
 pdf.Transfer <- dtnorm(x, mean.Transfer, sd.Transfer, min.Transfer, max.Transfer)
 @
 
 \subsubsection{Time Multiplier}
-
 <<timemultiplier>>=
 mean.TimeMultiplier <- 2.5
 sd.TimeMultiplier <- 1
@@ -213,21 +218,37 @@ legend("topright", c("Distance [miles]", "Speed [mph]",
 <<MAINLOOP>>=
 output.list <- list()
 for(i in 1:1000){
-	set.seed(i) # change random seed with each iteration
+	set.seed(1) # change random seed with each iteration
 	TravelTime <- costRandomMatrix(meandist= mean.Distance, sddist= sd.Distance, 
 																 meantransfer=mean.Transfer, sdtransfer= sd.Transfer, 
 																 mintransfer=min.Transfer, maxtransfer=max.Transfer, 
 																 meanmultiplier=mean.TimeMultiplier, 
 																 sdmultiplier=sd.TimeMultiplier, 
 																 meanspeed=mean.Speed, sdspeed=sd.Speed)
+	b <- 1
+	output.cleaner(gravityModel(Prods, Attrs,
+																									TravelTime, b, 1e-9))
 	output.list[[i]] <- output.cleaner(gravityModel(Prods, Attrs,
-																									TravelTime, 1, 1e-9))
+																									TravelTime, b, 1e-9))
 }
 
 output.matrix <- do.call(rbind, output.list)
 @
 \section{Results}
 
+
+\begin{figure}
+<<outputdensities, fig.keep='high', dev='tik'>>=
+figcolors <- brewer.pal(8, "Set1")
+maximum.pts <- vector("numeric", )
+
+for(i in figcolors){
+	X <- bkde(output.matrix[,i])
+	
+}
+@
+
+\end{figure}
 
 
 \begin{table}
