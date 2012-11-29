@@ -1,0 +1,11 @@
+load_data	Attrs	MyData	Prods
+values	x
+frictionfactor	mean.b	sd.b
+stationDistance	mean.Distance	pdf.Distance	sd.Distance
+travelSpeed	mean.Speed	miles	pdf.Speed	sd.Speed	speeds
+transferPenalty	max.Transfer	mean.Transfer	min.Transfer	pdf.Transfer	sd.Transfer
+timemultiplier	mean.TimeMultiplier	pdf.TimeMultiplier	sd.TimeMultiplier
+fig_lognormal	figcolors	linetypes
+MAINLOOP	TravelTime	i	output.list	output.matrix
+tab_transfers	OUTXTABLE	avgs	dirs	i	maxs	mins	outputTable	sdev
+outputdensities	X	dirs	figcolors	i	maximum.pts

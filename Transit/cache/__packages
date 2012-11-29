@@ -1,0 +1,14 @@
+tikzDevice
+filehash
+KernSmooth
+msm
+RColorBrewer
+xtable
+knitr
+stats
+graphics
+grDevices
+utils
+datasets
+methods
+base
