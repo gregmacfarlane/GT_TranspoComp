@@ -168,6 +168,11 @@ sd.Speed <- sd(speeds)
 pdf.Speed <- dnorm(x, mean.Speed, sd.Speed)
 @
 
+Speeds are normally distributed with a mean of \Sexpr{mean.Speed} and a standard deviation
+of \Sexpr{sd.Speed} miles per hour. These assumptions ar built on values published
+in the National Transit Database for heavy rail systems 
+\citep{AmericanPublicTransitAssocation2010}.
+
 % ----------------------------------------------------------------------------
 \subsection{Transfer Time}
 Transfer time depends on the timing of train arrivals on intersecting rail lines, which is in turn dependent upon train headways. Rail networks with short headways (less than 10 minutes) do not tend to coordinate arrival times on intersecting lines, since transfer time will always be less than 10 minutes. Rail networks with longer headways (greater than 10 minutes) tend to coordinate their train arrival times in order to create convenient transfer times. \citep{Vuchic} Therefore, this study assumes that transfer times vary between 0 and 10 minutes according to a truncated normal distribution, with a mean of 5 minutes and a standard deviation of 2.
@@ -248,9 +253,12 @@ output.matrix <- do.call(rbind, output.list)
 
 % ============================================================================
 \section{Results}
-Given the distributions for the three variables discussed above, they were then combined into a gravity model and implemented in the open source software R.  XXX draws were conducted for each probabilistic variable.  
+Given the distributions for the three variables discussed above, they were then combined
+into a gravity model and implemented in the open source software R.  XXX draws were 
+conducted for each probabilistic variable.  
 
-The final product of our analysis the shown in Figure XXX and Table XXX. As can be seen below, XX is the most likely number of transfers.  
+The final product of our analysis the shown in Figure \ref{fig:outputdensities}
+and Table XXX. As can be seen below, XX is the most likely number of transfers.  
 
 
 \begin{figure}
