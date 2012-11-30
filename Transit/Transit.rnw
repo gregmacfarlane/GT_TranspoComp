@@ -225,15 +225,17 @@ legend("topright", c(paste("Distance [miles]; $\\mu=$", round(exp(mean.Distance)
 % ----------------------------------------------------------------------------
 \subsection{Distance between Stations}
 Vuchic (2005) has tabulated the average stop spacing of urban metro systems in
-the world.  Of these, Athens has the shortest average stop spacing of 595m (0.37
-miles) and Mexico City has the longest of 1222m (0.76 miles)
+the world.  Of these, Athens has the shortest average stop spacing of 595 meters (0.37
+miles) and Mexico City has the longest of 1222 meters (0.76 miles)
 \citep{Vuchic2005urban}.  Based on Vuchic's (2005) data, the arithmetic mean of
 average stop spacing in urban heavy rail networks was calculated to be 0.594
 miles. For this analysis, a random station spacing is generated based on the
 empirical information collected by Vuchic (2005). This analysis assumes that
-stations are spaced according to a lognormal distribution with a mode of 0.6
-miles, a mean of 0 and a variance of 1. The lognormal distribution was chosen in
-order exclude negative distances.
+stations are spaced according to a lognormal distribution whose underlying
+normal distribution has a mean of \Sexpr{mean.Distance} and a standard deviation
+of \Sexpr{sd.Distance}; the resulting distribution has a mean of
+\Sexpr{exp(mean.Distance)} miles. The lognormal distribution was chosen to explicitly
+exclude negative distances.
 
 % ----------------------------------------------------------------------------
 \subsubsection{Travel Speed}
