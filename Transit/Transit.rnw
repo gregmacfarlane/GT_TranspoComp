@@ -26,7 +26,7 @@
 \begin{document}
 <<setup, cache=FALSE, warning=FALSE, message=FALSE, error=FALSE, echo=FALSE>>=
 library(knitr)
-opts_chunk$set(echo=FALSE, cache=TRUE, split=TRUE, cache.path='./cache/', autodep=TRUE)
+opts_chunk$set(echo=FALSE, cache=TRUE, cache.path='./cache/', autodep=TRUE)
 knit_hooks$set(crop = hook_pdfcrop)
 dep_auto()
 
@@ -176,6 +176,17 @@ in the National Transit Database
 
 % ----------------------------------------------------------------------------
 \subsection{Transfer Time}
+<<<<<<< HEAD
+Transfer time depends on the timing of train arrivals on intersecting rail lines, 
+which is in turn dependent upon train headways. Rail networks with short headways 
+(less than 10 minutes) do not tend to coordinate arrival times on intersecting lines, 
+since transfer time will always be less than 10 minutes. Rail networks with longer headways
+(greater than 10 minutes) tend to coordinate their train arrival times in order to create
+convenient transfer times. \citep{Vuchic} Therefore, this study assumes that transfer 
+times vary between 0 and 10 minutes according to a truncated normal distribution, 
+with a mean of 5 minutes and a standard deviation of 2.
+=======
+>>>>>>> 908dabe36e5c7863b91a2c492cbd1817b973deff
 
 <<transferPenalty>>=
 mean.Transfer <- 5
@@ -279,7 +290,8 @@ for(i in 1:length(figcolors)){
 	X <- bkde(output.matrix[,i])
 	lines(X, col=figcolors[i], lwd=2)
 	maximum.pts[i] <- X$x[which.max(X$y)]
-	
+	firstqt.pts[i] <- quantile(X$x, 0.25)
+	thirdqt.pts[i] <- quantile(X$x, 0.75)
 }
 
 
@@ -313,12 +325,15 @@ for(i in 1:8){
 }
 
 outputTable <- t(cbind(mins, maxs, sdev, avgs))
-outputTable <- rbind(outputTable, maximum.pts)
+outputTable <- rbind(outputTable,  firstqt.pts, thirdqt.pts, maximum.pts)
 colnames(outputTable) <- dirs
-rownames(outputTable) <- c("Minimum", "Maximum", "Std. Dev.", "Mean", "Most Likely")
+rownames(outputTable) <- c("Minimum", "Maximum", "Std. Dev.", "Mean",
+													 "$25^{th}$ percentile", "$75^{th}$ percentile",
+													 "Most Likely")
 
-OUTXTABLE <- xtable(outputTable, caption = NULL, label=NULL )
-print(OUTXTABLE, floating=FALSE)
+OUTXTABLE <- xtable(outputTable, caption = NULL, label=NULL)
+print.xtable(OUTXTABLE, floating=FALSE, sanitize.rownames.function=function(x){x},
+			add.to.row=list(list(6), "\\bf "))
 @
 	\end{center}
 \end{table}
@@ -326,9 +341,26 @@ print(OUTXTABLE, floating=FALSE)
 
 % ============================================================================
 \section{Discussion}
-We presented a probabilistic approach to determining the number of transfers from boardings and alightings in a given transit network.  This approach is grounded in values found in practice for heavy rail station spacing, travel speeds, transfer time, and transfer penalty.  \ref{fig:outputdensities} depicts the probability densities of the predicted transfer volume for each of the eight possible transfer situations.  A fifty percent confidence interval was also presented, as the analysis was based on many assumptions due to the limited information provided.  
+We presented a probabilistic approach to determining the number of transfers from 
+boardings and alightings in a given transit network.  This approach is grounded in 
+values found in practice for heavy rail station spacing, travel speeds, transfer 
+time, and transfer penalty.  \ref{fig:outputdensities} depicts the probability 
+densities of the predicted transfer volume for each of the eight possible transfer 
+situations.  A fifty percent confidence interval was also presented, as the analysis 
+was based on many assumptions due to the limited information provided.  
 
-While this overall approach utilizes a well-known model grounded in real-world values, there are noteworthy limitations to this approach.  First, gravity models are often criticized for their lack of theoretical basis in a transportation planning context, as well as high degrees of error \citep{meyer2000}.  Another drawback is the assumed value of one for the adjustment factor, k, and the friction factor parameter, b. Because these parameters are calculated purely empirically, there is insufficient information to determine alternative values with any substance.  Last, the travel cost function, which is based on travel time, was calculated using assumed values of station spacing and vehicle speed.  In relatively, these values would exist for a given transit network and would therefore not need to be calculated using a probabilistic approach.  Subsequently, a more robust analysis could be performed for an actual transit system using the methods presented with empirical data.
+While this overall approach utilizes a well-known model grounded in real-world values, 
+there are noteworthy limitations to this approach.  First, gravity models are often 
+criticized for their lack of theoretical basis in a transportation planning context, 
+as well as high degrees of error \citep{Meyer2000}.  Another drawback is the assumed 
+value of one for the adjustment factor, k, and the friction factor parameter, b. 
+Because these parameters are calculated purely empirically, there is insufficient 
+information to determine alternative values with any substance.  Last, the travel 
+cost function, which is based on travel time, was calculated using assumed values 
+of station spacing and vehicle speed.  In relatively, these values would exist for 
+a given transit network and would therefore not need to be calculated using a 
+probabilistic approach.  Subsequently, a more robust analysis could be performed 
+for an actual transit system using the methods presented with empirical data.
 
 \subsection*{A word on execution}
 This project was executed as a training exercise on literate programming using 
