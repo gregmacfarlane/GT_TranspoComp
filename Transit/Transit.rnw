@@ -26,7 +26,8 @@
 \begin{document}
 <<setup, cache=FALSE, warning=FALSE, message=FALSE, error=FALSE, echo=FALSE>>=
 library(knitr)
-opts_chunk$set(echo=TRUE, cache=TRUE, cache.path='./cache/', autodep=TRUE)
+opts_chunk$set(echo=FALSE, cache=TRUE, cache.path='./cache/', autodep=TRUE)
+knit_hooks$set(crop = hook_pdfcrop)
 dep_auto()
 
 #packages used for presentation
@@ -232,7 +233,7 @@ pdf.TimeMultiplier <- dtnorm(x, mean.TimeMultiplier, sd.TimeMultiplier, lower=1.
 
 % Make distribution graph
 \begin{figure}
-<<fig_lognormal, fig.keep='last', echo=FALSE, dev='tikz'>>=
+<<fig_lognormal, fig.keep='last', echo=FALSE, fig.height=4, dev='tikz', crop=TRUE>>=
 plot(c(), c(), ylim=c(0,0.5), xlim = c(0,25),
 		 xlab="Value", ylab="Density")
 
@@ -247,6 +248,7 @@ lines(x, pdf.Speed, col=figcolors[2], lwd=2, lty=linetypes[2])
 lines(x, pdf.Transfer, col=figcolors[3], lwd=2, lty=linetypes[3])
 # Time Multiplier
 lines(x, pdf.TimeMultiplier, col=figcolors[4], lwd=2, lty=linetypes[4])
+
 
 legend("topright", c("Distance [miles]", "Speed [mph]", 
 										 "Transfer Time [minutes]", "Wait Time Multiplier"),
@@ -281,8 +283,8 @@ The final product of our analysis the shown in the following graph.  This graph 
 
 
 \begin{figure}
-<<outputdensities, echo=FALSE, fig.keep='high', dev='tikz'>>=
-plot(c(), c(), ylim=c(0,0.03), xlim = c(0,100),
+<<outputdensities, echo=FALSE, fig.keep='high', fig.height=4, dev='tikz', crop=TRUE>>=
+plot(c(), c(), ylim=c(0,0.03), xlim = c(10,120),
 		 xlab="Value", ylab="Density")
 
 figcolors <- brewer.pal(8, "Set1")
@@ -291,11 +293,13 @@ maximum.pts <- vector("numeric", )
 for(i in 1:length(figcolors)){
 	X <- bkde(output.matrix[,i])
 	lines(X, col=figcolors[i], lwd=2)
+	maximum.pts[i] <- X$x[which.max(X$y)]
 }
+
 
 dirs <- c("W-S", "W-N", "E-S", "E-N", "S-W", "S-E", "N-W", "N-E")
 
-legend("topright", dirs, col=figcolors, lwd=2)
+legend("topright", dirs, col=figcolors, lwd=2, bty="n")
 
 @
 	\caption{Probability densities of predicted transfer volume.}
@@ -323,8 +327,9 @@ for(i in 1:8){
 }
 
 outputTable <- t(cbind(mins, maxs, sdev, avgs))
+outputTable <- rbind(outputTable, maximum.pts)
 colnames(outputTable) <- dirs
-rownames(outputTable) <- c("Minimum", "Maximum", "Std. Dev", "Mean")
+rownames(outputTable) <- c("Minimum", "Maximum", "Std. Dev.", "Mean", "Most Likely")
 
 OUTXTABLE <- xtable(outputTable, caption = NULL, label=NULL )
 print(OUTXTABLE, floating=FALSE)
