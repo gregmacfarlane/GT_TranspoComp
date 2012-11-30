@@ -83,7 +83,7 @@ TRB data analysis competition \sep trip distribution \sep gravity model \sep tra
 
 
 \section{Introduction}
-The purpose of this project is to estimate the transfer volumes in a given transit network, shown in Figure ## and Table ##. 
+The purpose of this project is to estimate the transfer volumes in a given transit network, shown in Figure \# and Table \#. 
 <<load_data>>=
 MyData <- read.csv("DATA/DATA.csv")
 Prods <- MyData$BOARD
