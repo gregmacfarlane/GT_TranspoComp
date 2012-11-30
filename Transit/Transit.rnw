@@ -66,16 +66,10 @@ Dodd Way, Atlanta, GA 30332}
 \begin{abstract}
 Transfers are an integral element of urban transit systems because they enable
 increased network coverage.  Despite their necessity, passengers often dislike 
-transferring due to various factors such as increased travel time, decreased reliability, 
-lack of infrastructure at transfer facilities, etc.  In this paper, we aim to estimate 
-the transfer volume at the hub in a small radial transit network, and we take into
-account these various factors to better understand their potential impacts on transfer 
-behavior.  Our overall approach is based on the well-known gravity model from the urban 
-transportation literature.  The variables used in this analysis are grounded in behavioral
-literature pertaining to transit network design, transfer penalties, and friction factors
-in public transportation.  These factors are analyzed in a novel approach that uses random
-parameters.  The results of the analysis show a range of transfer volumes from XX to YY,
-depending on the conditions mentioned above.
+transfers due to various factors such as increased travel time, decreased reliability, and
+lack of infrastructure at transfer facilities, among others.  In this paper, we aim to estimate the transfer volume at the hub in a small radial transit network, and we take intoaccount these various factors to better understand their potential impacts on transfer 
+behavior.  Our overall approach is based on the well-known gravity model from the urban transportation literature.  The variables used in this analysis are grounded in literature pertaining to transit network design, transfer penalties, and friction factors
+in public transportation.  These factors are analyzed in a novel approach that uses random parameters.  The results of the analysis show a range of transfer volumes from XX to YY, depending on the random conditions.
 \end{abstract}
 
 % keywords environment
@@ -88,15 +82,19 @@ TRB data analysis competition \sep trip distribution \sep gravity model \sep tra
 
 
 \section{Introduction}
-The overarching goal of this project is to determine the transfer volumes in a given transit network. 
+The purpose of this project is to estimate the transfer volumes in a given transit network, shown in Figure ## and Table ##. 
 <<load_data>>=
 MyData <- read.csv("DATA/DATA.csv")
 Prods <- MyData$BOARD
 Attrs <- MyData$ALIGHT
 @
 
+The approach uses an adapted gravity model, using randomly generated parameters. The gravity model is not the only alternative for trip distribution; alternatives include the entropy model \citep{Bierlaire}. The gravity model was chosen for this analysis because it is simple and most commonly used.
 
-\section{Literature}
+\section{Methodology}
+
+\subsection{Adapted Gravity Model}
+
 The gravity model has been in existence for over 100 years, and it is one of 
 the most common models used to model trip distributions used in urban transportation 
 planning \citep{Meyer2000}.  The general gravity model has the following formula:
@@ -106,51 +104,35 @@ T_{ij} = \dfrac{P_i [ A_j f_{ij} k_{ij}]}
 \end{equation}
 where $T_{ij}$ are the estimated trips between discrete zones $i$ and $j$, $P_i$ are
 the trips produced at $i$, $A_j$ are the trips attracted to zone $j$, $f$ is a function
-of the travel disutility (time, distance, or cost) between $i$ and $j$, and $k_{ij}$ 
-is a {\em post-hoc} adjustment factor. 
+of the travel disutility between $i$ and $j$, and $k_{ij}$ is a {\em post-hoc} adjustment factor. 
 
-While the gravity model is the most commonly used trip distribution model, there are other alternative models.  These include the entropy model \citep{Bierlaire}, XXX model (CITATION), and YYY (CITATION).  Because of the gravity model is simplistic and most commonly used, we select it for this analysis.  
-
-Given the nature of the problem, we believe the focus should be on testing the various inputs.  We examine the literature pertaining to trip distribution and public transportation origin destination estimation, we arrive on three primary factors that will need to be tested as inputs to our model.  These factors are the friction factor (in the gravity equation above), the transfer penalty, and the distance between stations. 
-
-\subsection{Variable 1: Friction Factor}
-One of the variables in the gravity model is the friction factor, which can assume various functional forms.  This analysis uses an inverse costs function, which pertains to the cost of travel between zones (or in this case, between stations).  \citep{Meyer2000}. A constant (b) is used which is empirically calculated based on the specific transit network. A b value of one was used for this analysis, as not enough information was provided to identify an alternate, more appropriate value.   
-
-$[Can we find common values of the friction factor????????????]$
-
-\subsection{Variable 2: Distance between Stations}
-The second variable in the gravity model is the distance between zones (or in this case, between stations).  In a given network, the distance between existing stations is fixed.  In this instance, the layout of the stations is provided, but the numerical value of distance between stations is not given.  Because the nature of the gravity model is inherently based upon distance, we will assume a variety of distance configurations to best understand the impact of friction factor and transfer penalty on network geometry.  This resembles a radial network.  
-
-According to the transit planning literature, Vuchic (2005) ranks the average stop spacing of urban metro systems in the world.  Of these, Athens has the shortest average stop spacing of 595m (0.37 miles) and Mexico City has the longest of 1222m (0.76 miles) \citep{Vuchic2005}.  The average of average stop spacing is 0.594 miles.  It should be noted that Vuchic (2005) also lists the average stop spacing for regional rail systems, which can range up to 1770m (1.10 miles) for St. Petersburg. We base the distances on transit stop spacing literature and transit network design literature, and this will provide bounds for our subsequent analysis. 
-
-\subsection{Variable 3: Transfer Penalty}
-Given the nature of the network of the transit network with a significant number of transfers, we believe that the onerous nature of transferring should be taken into account in the modeling approach. Therefore, we investigate the so-called transfer penalty.  We will use this in coordination with the friction factor.
-
-According to the TCQSM, the average transit time is 2.5 the value of in-vehicle time for work trips.  The range is from 1.1 to 4.4 times the value of in-vehicle travel time.  This is because passengers perceive transfers to be onerous.  \citep{TCQSM}.  Reasons for this include out-of-vehicle transfers, at grade transfer, being exposed to the elements, and uncertainty, among others  \citep{Guo}.
-
-
-% ============================================================================
-\section{Methodology} \label{sec:methodology}
-
-Since many of the key variables are not known, we take a probabilistic approach to determining the transfer volume. We begin with the standard gravity model discussed above, and we aim to find the transfer volume.  Then, we assume probabilistic distributions of the three variables discussed in the previous paragraphs (the friction factor, the distance between stations, and the transfer penalty).  We then run many iterations of the gravity model until we find a variable that it converges. We believe this will provide us with robust results. 
-
-%------------------------------------------------------------------------------------
-\subsection{Adapted Gravity Model Equation}
-For this study, we use the specific model
+Based on the literature pertaining to trip distribution and public transportation origin destination estimation, the $f$ function in the basic gravity model depends on travel time and a friction factor. Therefore, an adapted gravity model is formulated for this analysis, as follows: 
 \begin{equation}\label{eq:mygravity}
 T_{ij} = \dfrac{P_i A_j t_{ij}^{-b}}
 							 {\sum_{j=1}^N A_j t_{ij}^{-b}}
 \end{equation}
-where $f$ is simply the travel time between $i$ and $j$ with an exponential friction factor
-$b$ that ensures non-linear marginal cost as the absolute cost increases. We replace the 
-adjustment factor $k$ with an iterative process that incrementally balances the model's
-predicted attractions with the starting values. 
 
-%------------------------------------------------------------------------------------
+In the adapted model, $f$ has been replaced by the travel time, $t$ between $i$ and $j$, with an exponential friction factor $b$. Placing the friction factor as a negative exponent ensures that the marginal utility of travel decreases non-linearly as travel time increases. In the adapted model, the adjustment factor $k$ is replaced with an iterative process that incrementally balances the model's predicted attractions with the starting values.
+
+Since the friction factor and the travel time between stations are not known for the given system, we generate them using assumptions based in the trip distribution literature, as discussed in the following sections.
+
+
+% ----------------------------------------------------------------------------
+\subsection{Friction Factor}
+
+One of the variables in the gravity model is the friction factor, which can assume various functional forms.  This analysis uses an inverse costs function, which pertains to the cost of travel between zones (or in this case, between stations) \citep{Meyer2000}. In practice, a constant friction factor, $b$ is empirically calculated for a given transit system based on characteristics of the network, and the travelers. For this analysis, a value of $b = 1$ is assumed, because no information is available to estimate another value.   
+
+
+% ----------------------------------------------------------------------------
 \subsection{Travel Time Function}
+
 The travel time is an aggregate function of several parameters including the distance 
 between stations, the speed of the rail system, the potential transfer wait time, and the
-perceived disutility of that wait time. We create these parameters randomly, based on 
+perceived disutility of that wait time as shown in the following equation:
+
+$[insert equation]$
+
+We create these parameters randomly, based on 
 assumptions derived from real-world empirics and discussed below. Probability density 
 functions of our assumed distributions are given in Figure \ref{fig:pdfs}.
 <<values>>=
@@ -159,17 +141,10 @@ x <- seq(0, 30, 0.01)
 @
 
 % ----------------------------------------------------------------------------
-\subsection{Friction Factor}
-
-
-% ----------------------------------------------------------------------------
 \subsection{Distance between Stations}
-Again, we assume two cases for the distance between stations.  First, for a baseline measure, we assume a fixed, equidistant distance between stations. Then, we use a random distribution, as discussed below. 
+Vuchic (2005) ranks the average stop spacing of urban metro systems in the world.  Of these, Athens has the shortest average stop spacing of 595m (0.37 miles) and Mexico City has the longest of 1222m (0.76 miles) \citep{Vuchic2005}.  The arithmetic mean of average stop spacing in urban networks is 0.594 miles.  It should be noted that Vuchic (2005) also lists the average stop spacing for regional rail systems, which can range up to 1770m (1.10 miles) for St. Petersburg. 
 
-Case 1: Equidistant Station Spacing: 0.6 is most common in urban metro systems, according to Vuchic (2005).  
-
-Case 2: Random Station Spacing: Because no information about the station spacing is given in the network geometry, we will assume random values for station values within a given range.  As we previously mentioned, station spacing generally ranges between one third of a mile with 0.6 miles being average.  To assign a probabilistic distribution, we use a lognormal distribution with a mode of 0.6 miles.  
-Lognormal distribution with a mean of 0 and a variance of 1. 
+For this analysis, a random station spacing is generated based on the empirical information collected by Vuchic (2005). This analysis assumes that stations are spaced according to a lognormal distribution with a mode of 0.6 miles, a mean of 0 and a variance of 1. 
 
 <<stationDistance>>=
 mean.Distance <- -0.5
@@ -178,9 +153,6 @@ sd.Distance = 0.5
 pdf.Distance <- dlnorm(x, mean.Distance, sd.Distance)
 @
 
-$[Insert Figure 2: Lognormal Distribution for Distance between Stations]$
-
-Given the distributions for the three variables discussed above, they were then combined into a gravity model and implemented in the open source software R.  XXX draws were conducted for each probabilistic variable.  
 
 % ----------------------------------------------------------------------------
 \subsubsection{Travel Speed}
@@ -197,17 +169,7 @@ pdf.Speed <- dnorm(x, mean.Speed, sd.Speed)
 
 % ----------------------------------------------------------------------------
 \subsection{Transfer Time}
-Transfer time depends on the timing of train arrivals on intersecting rail lines, which is in turn dependent upon train headways. Rail networks with short headways (less than 10 minutes) do not tend to coordinate arrival times on intersecting lines, since transfer time will always be less than 10 minutes. Rail networks with longer headways (greater than 10 minutes) tend to coordinate their train arrival times in order to create convenient transfer times. \citep{Vuchic} Therefore, this study assumes that transfer times may vary between 0 and 10 minutes, with an average of 5 minutes.
-
-% ----------------------------------------------------------------------------
-\subsection{Transfer Penalty}
-We assume two cases for the transfer penalty.  
-
-Case 1: Constant Transfer Penalty: According to the TCQSM ,the average transfer penalty for work trips (which is the most common journey purpose) is 1.1 times the value of in-vehicle time.  Therefore, we use 1.1 times the distance in as a baseline value.  
-
-Case 2: Random Transfer Penalty: The TCQSM also gives a range from 2.5 to 4.4 times the value of in-vehicle travel time.  This is because passengers perceive transfers to be onerous.  (REFERENCE: TCQSM, Chapter 3, Pages 19-20).  These values will provide the baseline for our random transfer penalty assignment.  Since we do not know the nature of the transfer (i.e. at grade, in- or out- of station, reference others), we randomly draw from a normal distribution with a mean of 2.5 and a standard deviation of XXXX.  This is shown in the graphic below.
-
-$[INSERT Figure 1: Normal Distribution of Transfer Penalty (citation)]$
+Transfer time depends on the timing of train arrivals on intersecting rail lines, which is in turn dependent upon train headways. Rail networks with short headways (less than 10 minutes) do not tend to coordinate arrival times on intersecting lines, since transfer time will always be less than 10 minutes. Rail networks with longer headways (greater than 10 minutes) tend to coordinate their train arrival times in order to create convenient transfer times. \citep{Vuchic} Therefore, this study assumes that transfer times vary between 0 and 10 minutes according to a truncated normal distribution, with a mean of 5 minutes and a standard deviation of 2.
 
 <<transferPenalty>>=
 mean.Transfer <- 5
@@ -217,6 +179,13 @@ max.Transfer <- 10
 
 pdf.Transfer <- dtnorm(x, mean.Transfer, sd.Transfer, min.Transfer, max.Transfer)
 @
+
+
+% ----------------------------------------------------------------------------
+\subsection{Transfer Time Multiplier}
+Transit passengers perceive out-of-vehicle time differently, more onerous, than in-vehicle time. Reasons for this include out-of-vehicle transfers, at grade transfer, being exposed to the elements, and uncertainty, among others  \citep{Guo}. According to the 2nd edition of Transit Capacity Quality Service Manual (TCQSM), passengers perceive one minute of wait time during transfers to be 2.5 times more onerous than one minute of in-vehicle travel time, on average, for work trips.  The range for this transfer time multiplier is from 1.1 to 4.4 \citep{TCQSM2003}.  
+
+This analysis assumes a randomly distributed transfer time multiplier based on the details provided by the TCQSM: we randomly draw from a normal distribution with a mean of 2.5 and a standard deviation of 1.  
 
 \subsubsection{Time Multiplier}
 <<timemultiplier>>=
@@ -277,7 +246,9 @@ output.matrix <- do.call(rbind, output.list)
 
 % ============================================================================
 \section{Results}
-The final product of our analysis the shown in the following graph.  This graph shows the probability of the number of transfers (one for each direction).  As can be seen below, XX is the most likely number of transfers.  
+Given the distributions for the three variables discussed above, they were then combined into a gravity model and implemented in the open source software R.  XXX draws were conducted for each probabilistic variable.  
+
+The final product of our analysis the shown in Figure XXX and Table XXX. As can be seen below, XX is the most likely number of transfers.  
 
 
 \begin{figure}
