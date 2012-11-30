@@ -26,7 +26,7 @@
 \begin{document}
 <<setup, cache=FALSE, warning=FALSE, message=FALSE, error=FALSE, echo=FALSE>>=
 library(knitr)
-opts_chunk$set(echo=FALSE, cache=TRUE, cache.path='./cache/', autodep=TRUE)
+opts_chunk$set(echo=FALSE, cache=TRUE, split=TRUE, cache.path='./cache/', autodep=TRUE)
 knit_hooks$set(crop = hook_pdfcrop)
 dep_auto()
 
@@ -192,7 +192,14 @@ in the National Transit Database for heavy rail systems
 
 % ----------------------------------------------------------------------------
 \subsection{Transfer Time}
-Transfer time depends on the timing of train arrivals on intersecting rail lines, which is in turn dependent upon train headways. Rail networks with short headways (less than 10 minutes) do not tend to coordinate arrival times on intersecting lines, since transfer time will always be less than 10 minutes. Rail networks with longer headways (greater than 10 minutes) tend to coordinate their train arrival times in order to create convenient transfer times. \citep{Vuchic} Therefore, this study assumes that transfer times vary between 0 and 10 minutes according to a truncated normal distribution, with a mean of 5 minutes and a standard deviation of 2.
+Transfer time depends on the timing of train arrivals on intersecting rail lines, 
+which is in turn dependent upon train headways. Rail networks with short headways 
+(less than 10 minutes) do not tend to coordinate arrival times on intersecting lines, 
+since transfer time will always be less than 10 minutes. Rail networks with longer headways
+(greater than 10 minutes) tend to coordinate their train arrival times in order to create
+convenient transfer times. \citep{Vuchic} Therefore, this study assumes that transfer 
+times vary between 0 and 10 minutes according to a truncated normal distribution, 
+with a mean of 5 minutes and a standard deviation of 2.
 
 <<transferPenalty>>=
 mean.Transfer <- 5
@@ -289,11 +296,14 @@ plot(c(), c(), ylim=c(0,0.03), xlim = c(10,120),
 
 figcolors <- brewer.pal(8, "Set1")
 maximum.pts <- vector("numeric", )
+firstqt.pts <- vector("numeric", )
+thirdqt.pts <- vector("numeric", )
 
 for(i in 1:length(figcolors)){
 	X <- bkde(output.matrix[,i])
 	lines(X, col=figcolors[i], lwd=2)
 	maximum.pts[i] <- X$x[which.max(X$y)]
+	
 }
 
 
