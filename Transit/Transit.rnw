@@ -46,14 +46,15 @@ source("./Scripts/gravity.R")
 \title{Random-Parameter Gravity Models and Transit Ridership: 
 				TRB data analysis competition}
 
+\author[gtcivil,gtecon]{Gregory S. Macfarlane\corref{cor1}} 
+  \ead{gregmacfarlane@gatech.edu}
 \author[gtcivil]{Candace Brakewood}
   \ead{candace.brakewood@gatech.edu}
 \author[gtcivil]{Jamie M. Fischer}
   \ead{jm.fischer@gatech.edu}
 \author[gtcivil]{Alex Poznanski}
   \ead{alex.poznanski@gatech.edu}
-\author[gtcivil,gtecon]{Gregory S. Macfarlane\corref{cor1}} 
-  \ead{gregmacfarlane@gatech.edu}
+
 
 \address[gtcivil]{School of Civil and Environmental Engineering, Georgia Institute of
 Technology\\ 790 Atlantic Drive, Atlanta GA 30332-0355}
@@ -107,13 +108,29 @@ where $T_{ij}$ are the estimated trips between discrete zones $i$ and $j$, $P_i$
 the trips produced at $i$, $A_j$ are the trips attracted to zone $j$, $f$ is a function
 of the travel disutility between $i$ and $j$, and $k_{ij}$ is a {\em post-hoc} adjustment factor. 
 
-Based on the literature pertaining to trip distribution and public transportation origin destination estimation, the $f$ function in the basic gravity model depends on travel time and a friction factor. Therefore, an adapted gravity model is formulated for this analysis, as follows: 
+Based on the literature pertaining to trip distribution and public transportation 
+origin destination estimation, the $f$ function in the basic gravity model depends 
+on travel time and a friction factor. Therefore, an adapted gravity model is formulated
+for this analysis, as follows: 
 \begin{equation}\label{eq:mygravity}
 T_{ij} = \dfrac{P_i A_j t_{ij}^{-b}}
 							 {\sum_{j=1}^N A_j t_{ij}^{-b}}
 \end{equation}
 
-In the adapted model, $f$ has been replaced by the travel time, $t$ between $i$ and $j$, with an exponential friction factor $b$. Placing the friction factor as a negative exponent ensures that the marginal utility of travel decreases non-linearly as travel time increases. In the adapted model, the adjustment factor $k$ is replaced with an iterative process that incrementally balances the model's predicted attractions with the starting values.
+In the adapted model, $f$ is a function of the travel cost, 
+\footnote{Travel ``cost'' is expressed in perceived travel minutes. 
+Proper unit conversion factors are suppresed for simplicity.} 
+\begin{equation}\label{eq:times}
+t_{ij} = \dfrac{d_{ij}}{s} + \lambda W_{ij}
+\end{equation}
+where $d_{ij}$ is the distance between $i$ and $j$, $s$ is the effective network 
+average operating speed, $\lambda$ is a wait multiplier to the transfer time 
+$W_{ij}$ ($W=0$ if no transfer is required between $i$ and $j$).
+This time is raised to the negative of a friction factor $b$; specifying the friction factor 
+in this way ensures that the marginal cost of a minute of travel diminishes as 
+absolute travel time increases. 
+In the adapted model, the adjustment factor $k$ is replaced with an iterative process that
+incrementally balances the model's predicted attractions with the starting values.
 
 Since the friction factor and the travel time between stations are not known for the given system, we generate them using assumptions based in the trip distribution literature, as discussed in the following sections.
 
