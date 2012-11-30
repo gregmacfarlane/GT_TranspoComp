@@ -224,8 +224,11 @@ lines(x, pdf.Transfer, col=figcolors[3], lwd=2, lty=linetypes[3])
 lines(x, pdf.TimeMultiplier, col=figcolors[4], lwd=2, lty=linetypes[4])
 
 
-legend("topright", c("Distance [miles]", "Speed [mph]", 
-										 "Transfer Time [minutes]", "Wait Time Multiplier"),
+legend("topright", c(paste("Distance [miles]; $\\mu=$", mean.Distance, sep=""),
+										 paste("Speed [mph]; $\\mu=$", mean.Speed, sep=""), 
+										 paste("Transfer Time [minutes]; $\\mu=$", mean.Transfer, sep=""),
+										 paste("Transfer Time Multiplier; $\\mu=$", mean.TimeMultiplier, sep="")
+										 ),
 			 col=figcolors, lwd=2, bty="n", lty=linetypes)
 
 @
