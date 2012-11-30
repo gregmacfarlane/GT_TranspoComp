@@ -66,7 +66,14 @@ Dodd Way, Atlanta, GA 30332}
 %% Abstract
 \begin{abstract}
 Transfers are an integral element of urban transit systems because they enable
-increased network coverage. In this paper, we aim to estimate the transfer volume at the hub in a small radial transit network.  Our overall approach is based on the well-known gravity model for trip distribution. We introduce a travel cost function comprised of probabilistic variables, which have been formulated based on findings in the transit planning and operations literature.  These variables are analyzed using Monte Carlo simulation.  The results show that the most likely transfer volumes range from 50 to 73 passengers per direction per hour.
+increased network coverage. In this paper, we aim to estimate the transfer
+volume at the hub in a small radial transit network.  Our overall approach is
+based on the well-known gravity model for trip distribution. We introduce a
+travel cost function comprised of probabilistic variables, which have been
+formulated based on findings in the transit planning and operations literature.
+These variables are analyzed using Monte Carlo simulation.  The results show
+that the most likely transfer volumes range from 50 to 73 passengers per
+direction per hour.
 \end{abstract}
 
 % keywords environment
@@ -79,7 +86,10 @@ TRB data analysis competition \sep trip distribution \sep gravity model \sep tra
 
 
 \section{Introduction}
-The purpose of this project is to estimate the transfer volumes in a radial transit network with nine stations where hourly boradings and alightings are given. To do this, a gravity model has been adapted using Monte Carlo simulation. 
+The purpose of this project is to estimate the transfer volumes in a radial
+transit network with nine stations where hourly boradings and alightings are
+given. To do this, a gravity model has been adapted using Monte Carlo
+simulation. 
 
 <<load_data>>=
 MyData <- read.csv("DATA/DATA.csv")
@@ -92,38 +102,55 @@ Attrs <- MyData$ALIGHT
 
 \subsection{Adapted Gravity Model}
 
-The gravity model was chosen for this analysis because it is simple and most commonly used among trip distribution methodologies \citep{Meyer2000}. The general gravity model has the following formula:
+The gravity model was chosen for this analysis because it is simple and most
+commonly used among trip distribution methodologies \citep{Meyer2000}. The
+general gravity model has the following formula:
 
 \begin{equation}\label{eq:generalGravity}
 T_{ij} = \dfrac{P_i [ A_j f_{ij} k_{ij}]}
 							 {\sum_{n=1}^m A_j f_{ij} k_{ij} }
 \end{equation}
 
-where $T_{ij}$ are the estimated trips between discrete zones $i$ and $j$, $P_i$ are
-the trips produced at $i$, $A_j$ are the trips attracted to zone $j$, $f$ is a function
-of the travel disutility between $i$ and $j$, and $k_{ij}$ is a {\em post-hoc} adjustment factor. 
+where $T_{ij}$ are the estimated trips between discrete zones $i$ and $j$, $P_i$
+are the trips produced at $i$, $A_j$ are the trips attracted to zone $j$, $f$ is
+a function of the travel disutility between $i$ and $j$, and $k_{ij}$ is a {\em
+post-hoc} adjustment factor. 
 
-Based on the literature pertaining to trip distribution on public transit networks, the $f$ function in the basic gravity model depends 
-on travel time and a friction factor. Therefore, an adapted gravity model is formulated
-for this analysis, as follows: 
+Based on the literature pertaining to trip distribution on public transit
+networks, the $f$ function in the basic gravity model depends on travel time and
+a friction factor. Therefore, an adapted gravity model is formulated for this
+analysis, as follows: 
 
 \begin{equation}\label{eq:mygravity}
 T_{ij} = \dfrac{P_i A_j t_{ij}^{-b}}
 							 {\sum_{j=1}^N A_j t_{ij}^{-b}}
 \end{equation}
 
-In the adapted model, $f$ has been replaced with a function of travel cost, $t$, raised to the negative of a friction factor $b$. Specifying the friction factor in this way ensures that the marginal utility of travel decreases non-linearly as travel time increases. For this analysis, a value of $b = 1$ is assumed for the idealized transit network, since no additional network characteristics are available to generate another value. In the adapted model, a value of $k=1$ is assumed for the adjustment factor.
+In the adapted model, $f$ has been replaced with a function of travel cost, $t$,
+raised to the negative of a friction factor $b$. Specifying the friction factor
+in this way ensures that the marginal utility of travel decreases non-linearly
+as travel time increases. For this analysis, a value of $b = 1$ is assumed for
+the idealized transit network, since no additional network characteristics are
+available to generate another value. In the adapted model, a value of $k=1$ is
+assumed for the adjustment factor.
 
 \subsection{Travel Cost Function}
-For this analysis, travel ``cost'' is expressed in perceived travel minutes, according to the following equation: 
+For this analysis, travel ``cost'' is expressed in perceived travel minutes,
+according to the following equation: 
 \begin{equation}\label{eq:times}
 t_{ij} = \dfrac{d_{ij}}{s} + \lambda W_{ij}
 \end{equation}
-where $d_{ij}$ is the distance between stations $i$ and $j$, $s$ is the effective network 
-average operating speed, 
-$W_{ij}$ is transfer time ($W=0$ if no transfer is required between $i$ and $j$), and $\lambda$ is a transfer time multiplier.
+where $d_{ij}$ is the distance between stations $i$ and $j$, $s$ is the
+effective network average operating speed, $W_{ij}$ is transfer time ($W=0$ if
+no transfer is required between $i$ and $j$), and $\lambda$ is a transfer time
+multiplier.
 
-Monetary and other potential travel costs are excluded from this analysis since they are assumed to have negligible effects on transfer behavior. Travel distance, operating speed, transfer time, and the transfer time multiplier parameters are generated through Monte Carlo simulations, as discussed in the sections below. Probability density functions of our assumed distributions are given in Figure \ref{fig:pdfs}.
+Monetary and other potential travel costs are excluded from this analysis since
+they are assumed to have negligible effects on transfer behavior. Travel
+distance, operating speed, transfer time, and the transfer time multiplier
+parameters are generated through Monte Carlo simulations, as discussed in the
+sections below. Probability density functions of our assumed distributions are
+given in Figure \ref{fig:pdfs}.
 <<values>>=
 # x-values for pdf graphs
 x <- seq(0, 30, 0.01)
@@ -197,25 +224,63 @@ legend("topright", c(paste("Distance [miles]; $\\mu=$", round(exp(mean.Distance)
 \end{figure}
 % ----------------------------------------------------------------------------
 \subsection{Distance between Stations}
-Vuchic (2005) has tabulated the average stop spacing of urban metro systems in the world.  Of these, Athens has the shortest average stop spacing of 595m (0.37 miles) and Mexico City has the longest of 1222m (0.76 miles) \citep{Vuchic2005urban}.  Based on Vuchic's (2005) data, the arithmetic mean of average stop spacing in urban heavy rail networks was calculated to be 0.594 miles. For this analysis, a random station spacing is generated based on the empirical information collected by Vuchic (2005). This analysis assumes that stations are spaced according to a lognormal distribution with a mode of 0.6 miles, a mean of 0 and a variance of 1. The lognormal distribution was chosen in order exclude negative distances.
+Vuchic (2005) has tabulated the average stop spacing of urban metro systems in
+the world.  Of these, Athens has the shortest average stop spacing of 595m (0.37
+miles) and Mexico City has the longest of 1222m (0.76 miles)
+\citep{Vuchic2005urban}.  Based on Vuchic's (2005) data, the arithmetic mean of
+average stop spacing in urban heavy rail networks was calculated to be 0.594
+miles. For this analysis, a random station spacing is generated based on the
+empirical information collected by Vuchic (2005). This analysis assumes that
+stations are spaced according to a lognormal distribution with a mode of 0.6
+miles, a mean of 0 and a variance of 1. The lognormal distribution was chosen in
+order exclude negative distances.
 
 % ----------------------------------------------------------------------------
 \subsubsection{Travel Speed}
 
-Train speeds are assumed to be normally distributed with a mean of \Sexpr{mean.Speed} and a standard deviation
-of \Sexpr{sd.Speed} miles per hour. These assumptions are built on values published
-in the 2010 National Transit Database by the Federal Transit Administration 
-\citep{APTA2010}. The National Transit Database was queried for the annual train revenue miles (distance) and annual train revenue hours (time) in all heavy rail systems in the United States.  The distance values were normalized by the time in order to calculate average speed for each heavy rail system.  To determine a representative number for all heavy rail systems, a weighted average speed was calculated (weighted by the revenue miles per system) in order to reduce the impact of small systems on the overall average.   
+Train speeds are assumed to be normally distributed with a mean of
+\Sexpr{mean.Speed} and a standard deviation of \Sexpr{sd.Speed} miles per hour.
+These assumptions are built on values published in the 2010 National Transit
+Database by the Federal Transit Administration \citep{APTA2010}. The National
+Transit Database was queried for the annual train revenue miles (distance) and
+annual train revenue hours (time) in all heavy rail systems in the United
+States.  The distance values were normalized by the time in order to calculate
+average speed for each heavy rail system.  To determine a representative number
+for all heavy rail systems, a weighted average speed was calculated (weighted by
+the revenue miles per system) in order to reduce the impact of small systems on
+the overall average.   
 
 % ----------------------------------------------------------------------------
 \subsection{Transfer Time}
 
-Transfer time depends on the timing of train arrivals on intersecting rail lines, which is in turn dependent upon train headways. Rail networks with short headways (less than 10 minutes) do not tend to coordinate arrival times on intersecting lines, since transfer time will always be short. Rail networks with longer headways (greater than 10 minutes) tend to coordinate their train arrival times in order to create convenient transfer times. \citep{Vuchic2005urban} Therefore, this study assumes that transfer times vary according to a truncated normal distribution, with a minimum of \Sexpr{min.Transfer}, maximum of \Sexpr{max.Transfer}, mean of \Sexpr{mean.Transfer} minutes and a standard deviation of \Sexpr{sd.Transfer} minutes.
+Transfer time depends on the timing of train arrivals on intersecting rail
+lines, which is in turn dependent upon train headways. Rail networks with short
+headways (less than 10 minutes) do not tend to coordinate arrival times on
+intersecting lines, since transfer time will always be short. Rail networks with
+longer headways (greater than 10 minutes) tend to coordinate their train arrival
+times in order to create convenient transfer times. \citep{Vuchic2005urban}
+Therefore, this study assumes that transfer times vary according to a truncated
+normal distribution, with a minimum of \Sexpr{min.Transfer}, maximum of
+\Sexpr{max.Transfer}, mean of \Sexpr{mean.Transfer} minutes and a standard
+deviation of \Sexpr{sd.Transfer} minutes.
 
 % ----------------------------------------------------------------------------
 \subsection{Transfer Time Multiplier}
 
-Transit passengers perceive out-of-vehicle time to be more onerous than in-vehicle time. This modification to the travel cost is often called the ``transfer penalty.'' The transfer penalty can be influenced by multiple factors, ``including safety and security, ease of way-finding during transfers, availability of escalators, weather protection, seating availability, lighting, air conditioning and ventilation, and concessions on the platforms''  \citep{Guo2011}. The 2nd edition of Transit Capacity Quality Service Manual (TCQSM) states that passengers perceive one minute of tranfer time to be 2.5 times more onerous than one minute of in-vehicle travel time, on average, for work trips.  The range for this transfer time multiplier is from 1.1 to 4.4 \citep{TCQSM2003}. This analysis assumes a randomly distributed transfer time multiplier based on the details provided by the TCQSM: we randomly draw from a normal distribution with a mean of \Sexpr{mean.TimeMultiplier} and a standard deviation of \Sexpr{sd.TimeMultiplier}. 
+Transit passengers perceive out-of-vehicle time to be more onerous than
+in-vehicle time. This modification to the travel cost is often called the
+``transfer penalty.'' The transfer penalty can be influenced by multiple
+factors, ``including safety and security, ease of way-finding during transfers,
+availability of escalators, weather protection, seating availability, lighting,
+air conditioning and ventilation, and concessions on the platforms''
+\citep{Guo2011}. The 2nd edition of Transit Capacity Quality Service Manual
+(TCQSM) states that passengers perceive one minute of tranfer time to be 2.5
+times more onerous than one minute of in-vehicle travel time, on average, for
+work trips.  The range for this transfer time multiplier is from 1.1 to 4.4
+\citep{TCQSM2003}. This analysis assumes a randomly distributed transfer time
+multiplier based on the details provided by the TCQSM: we randomly draw from a
+normal distribution with a mean of \Sexpr{mean.TimeMultiplier} and a standard
+deviation of \Sexpr{sd.TimeMultiplier}. 
 
 % ----------------------------------------------------------------------------
 
@@ -240,7 +305,13 @@ output.matrix <- do.call(rbind, output.list)
 % ============================================================================
 \section{Results}
 
-The adapted gravity model simulation was run for 1000 draws using the open source software R. The final results of this simulation are shown in Figure \ref{fig:outputdensities} and Table \ref{tab:transfers}. The ``most likely'' values for each transfer direction, as shown in Table \ref{tab:transfers} refer to the most expected (peak) values shown in Figure \ref{fig:outputdensities}. Because these are probabilisitic values, the 25th and 75th percentiles are also presented in Table \ref{tab:transfers}, demonstrating a 50% confidence interval.
+The adapted gravity model simulation was run for 1000 draws using the open
+source software R. The final results of this simulation are shown in Figure
+\ref{fig:outputdensities} and Table \ref{tab:transfers}. The ``most likely''
+values for each transfer direction, as shown in Table \ref{tab:transfers} refer
+to the most expected (peak) values shown in Figure \ref{fig:outputdensities}.
+Because these are probabilisitic values, the 25th and 75th percentiles are also
+presented in Table \ref{tab:transfers}, demonstrating a 50\% confidence interval.
 
 
 \begin{figure}[h]
