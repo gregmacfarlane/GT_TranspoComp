@@ -87,9 +87,9 @@ TRB data analysis competition \sep trip distribution \sep gravity model \sep tra
 
 \section{Introduction}
 The purpose of this project is to estimate the transfer volumes in a radial
-transit network with nine stations where hourly boradings and alightings are
-given. To do this, a gravity model has been adapted using Monte Carlo
-simulation. 
+transit network with nine stations where hourly boardings and alightings are
+given. To do this, we employ Monte Carlo simulation techniques to the standard
+gravity model familiar to travel demand analysts.
 
 <<load_data>>=
 MyData <- read.csv("DATA/DATA.csv")
@@ -126,31 +126,36 @@ T_{ij} = \dfrac{P_i A_j t_{ij}^{-b}}
 							 {\sum_{j=1}^N A_j t_{ij}^{-b}}
 \end{equation}
 
-In the adapted model, $f$ has been replaced with a function of travel cost, $t$,
+In the adapted model, $f$ is a function of travel cost, $t$,
 raised to the negative of a friction factor $b$. Specifying the friction factor
-in this way ensures that the marginal utility of travel decreases non-linearly
-as travel time increases. For this analysis, a value of $b = 1$ is assumed for
-the idealized transit network, since no additional network characteristics are
-available to generate another value. In the adapted model, a value of $k=1$ is
-assumed for the adjustment factor.
+in this way ensures that the marginal cost of an additional minute of travel
+decreases as the absolute number of minutes traveled increases. For this
+analysis, a value of $b = 1$ is assumed for the idealized transit network, since
+no additional network characteristics are available to generate another value.
+We replace the $k$-factor with an iterative process that balances productions
+and attractions.
 
 \subsection{Travel Cost Function}
-For this analysis, travel ``cost'' is expressed in perceived travel minutes,
-according to the following equation: 
+For this analysis, travel ``cost'' is expressed in perceived travel
+minutes,\footnote{Appropriate unit conversion factors are suppressed for
+clarity.} according to the following equation: 
 \begin{equation}\label{eq:times}
 t_{ij} = \dfrac{d_{ij}}{s} + \lambda W_{ij}
 \end{equation}
 where $d_{ij}$ is the distance between stations $i$ and $j$, $s$ is the
 effective network average operating speed, $W_{ij}$ is transfer time ($W=0$ if
 no transfer is required between $i$ and $j$), and $\lambda$ is a transfer time
-multiplier.
+multiplier to account for the fact that most travelers perceive time waiting as
+more onerous than time in motion.
 
 Monetary and other potential travel costs are excluded from this analysis since
-they are assumed to have negligible effects on transfer behavior. Travel
+they may be assumed uniform for all travelers in the network. Travel
 distance, operating speed, transfer time, and the transfer time multiplier
-parameters are generated through Monte Carlo simulations, as discussed in the
-sections below. Probability density functions of our assumed distributions are
-given in Figure \ref{fig:pdfs}.
+parameters are given random values based on distributions supported by existing
+literature, and the probable trip matrix $T_{ij}$ is estimated through
+Monte Carlo techniques. The underlying assumptions on these distributions are
+outlined in the sections below, and are summarized by the probability density
+functions of our assumed distributions are given in Figure \ref{fig:pdfs}.
 <<values>>=
 # x-values for pdf graphs
 x <- seq(0, 30, 0.01)
@@ -174,6 +179,7 @@ sd.Speed <- sd(speeds)
 
 pdf.Speed <- dnorm(x, mean.Speed, sd.Speed)
 @
+
 
 <<transferPenalty>>=
 mean.Transfer <- 5
@@ -225,8 +231,8 @@ legend("topright", c(paste("Distance [miles]; $\\mu=$", round(exp(mean.Distance)
 % ----------------------------------------------------------------------------
 \subsection{Distance between Stations}
 Vuchic (2005) has tabulated the average stop spacing of urban metro systems in
-the world.  Of these, Athens has the shortest average stop spacing of 595 meters (0.37
-miles) and Mexico City has the longest of 1222 meters (0.76 miles)
+the world.  Of these, Athens has the shortest average stop spacing of 595 meters
+(0.37 miles) and Mexico City has the longest of 1222 meters (0.76 miles)
 \citep{Vuchic2005urban}.  Based on Vuchic's (2005) data, the arithmetic mean of
 average stop spacing in urban heavy rail networks was calculated to be 0.594
 miles. For this analysis, a random station spacing is generated based on the
@@ -234,8 +240,8 @@ empirical information collected by Vuchic (2005). This analysis assumes that
 stations are spaced according to a lognormal distribution whose underlying
 normal distribution has a mean of \Sexpr{mean.Distance} and a standard deviation
 of \Sexpr{sd.Distance}; the resulting distribution has a mean of
-\Sexpr{exp(mean.Distance)} miles. The lognormal distribution was chosen to explicitly
-exclude negative distances.
+\Sexpr{exp(mean.Distance)} miles. The lognormal distribution was chosen to
+explicitly exclude negative distances.
 
 % ----------------------------------------------------------------------------
 \subsubsection{Travel Speed}
@@ -275,21 +281,23 @@ in-vehicle time. This modification to the travel cost is often called the
 factors, ``including safety and security, ease of way-finding during transfers,
 availability of escalators, weather protection, seating availability, lighting,
 air conditioning and ventilation, and concessions on the platforms''
-\citep{Guo2011}. The 2nd edition of Transit Capacity Quality Service Manual
+\citep{Guo2011}. Transit Capacity Quality Service Manual
 (TCQSM) states that passengers perceive one minute of tranfer time to be 2.5
 times more onerous than one minute of in-vehicle travel time, on average, for
 work trips.  The range for this transfer time multiplier is from 1.1 to 4.4
 \citep{TCQSM2003}. This analysis assumes a randomly distributed transfer time
 multiplier based on the details provided by the TCQSM: we randomly draw from a
 normal distribution with a mean of \Sexpr{mean.TimeMultiplier} and a standard
-deviation of \Sexpr{sd.TimeMultiplier}. 
+deviation of \Sexpr{sd.TimeMultiplier}. The distribution is truncated at a
+lower bound of 1.1, prohibiting the trasfer time from being perceived as equal 
+to time in motion.
 
 % ----------------------------------------------------------------------------
 
 
 <<MAINLOOP>>=
 output.list <- list()
-for(i in 1:1000){
+for(i in 1:5000){
 	set.seed(i) # change random seed with each iteration
 	TravelTime <- costRandomMatrix(meandist= mean.Distance, sddist= sd.Distance, 
 																 meantransfer=mean.Transfer, sdtransfer= sd.Transfer, 
@@ -307,19 +315,20 @@ output.matrix <- do.call(rbind, output.list)
 % ============================================================================
 \section{Results}
 
-The adapted gravity model simulation was run for 1000 draws using the open
-source software R. The final results of this simulation are shown in Figure
-\ref{fig:outputdensities} and Table \ref{tab:transfers}. The ``most likely''
-values for each transfer direction, as shown in Table \ref{tab:transfers} refer
-to the most expected (peak) values shown in Figure \ref{fig:outputdensities}.
-Because these are probabilisitic values, the 25th and 75th percentiles are also
-presented in Table \ref{tab:transfers}, demonstrating a 50\% confidence interval.
+The adapted gravity model simulation was run for 5000 draws. The final results
+of this simulation are shown in Figure \ref{fig:outputdensities} and Table
+\ref{tab:transfers}. The ``most likely'' values for each transfer direction, as
+shown in Table \ref{tab:transfers} refer to the most expected (peak) values
+shown in Figure \ref{fig:outputdensities}.  Because these are probabilisitic
+values, the 25th and 75th percentiles are also presented in Table
+\ref{tab:transfers}, demonstrating a 50\% confidence interval.
 
 
 \begin{figure}[h]
 <<outputdensities, echo=FALSE, fig.keep='high', fig.height=4, dev='tikz', crop=TRUE>>=
 plot(c(), c(), ylim=c(0,0.03), xlim = c(10,120),
 		 xlab="Value", ylab="Density")
+
 
 figcolors <- brewer.pal(8, "Set1")
 maximum.pts <- vector("numeric", )
@@ -345,7 +354,7 @@ legend("topright", dirs, col=figcolors, lwd=2, bty="n")
 \end{figure}
 % ----------------------------------------------------------------------------
 
-\begin{table}[h]
+\begin{table}[h!]
 	\caption{Transfers by Direction}
 	\label{tab:transfers}
 	\begin{center}
@@ -355,6 +364,7 @@ mins <- vector("numeric",length=8)
 maxs <- vector("numeric",length=8)
 sdev <- vector("numeric",length=8)
 avgs <- vector("numeric",length=8)
+
 
 
 for(i in 1:8){
@@ -381,21 +391,23 @@ print.xtable(OUTXTABLE, floating=FALSE, sanitize.rownames.function=function(x){x
 
 % ============================================================================
 \section{Discussion}
-This analysis uses a probabilistic approach to determining the number of transfers from 
-boardings and alightings in a given transit network.  This approach is grounded in 
-values found in practice for heavy rail station spacing, travel speeds, transfer 
-time, and transfer penalty. While this overall approach utilizes a well-known model grounded in real-world values, 
-there are noteworthy limitations to this approach.  First, gravity models are often 
-criticized for their lack of theoretical basis in a transportation planning context, 
-as well as high degrees of error \citep{Meyer2000}.  Another drawback is the assumed 
-value of one for the adjustment factor, k, and the friction factor parameter, b. 
-Because these parameters are usually calculated based on context-specific empirical data, there is insufficient 
-information to determine alternative for the given transit system.  Last, the travel 
-cost function, which is based on travel time, is calculated using assumed values 
-of station spacing and vehicle speed.  In relatively, these values would exist for 
-a given transit network and would therefore not need to be calculated using a 
-probabilistic approach.  Subsequently, a more robust analysis could be performed 
-for an actual transit system using the methods presented with empirical data.
+This analysis uses a probabilistic approach to determining the number of
+transfers from boardings and alightings in a given transit network.  This
+approach is grounded in values found in practice for heavy rail station spacing,
+travel speeds, transfer time, and transfer penalty. While this overall approach
+utilizes a well-known model grounded in real-world values, there are noteworthy
+limitations to this approach.  First, gravity models are often criticized for
+their lack of theoretical basis in a transportation planning context, as well as
+high degrees of error \citep{Meyer2000}.  Another drawback is the assumed value
+of the friction factor parameter, $b$.
+Because friction parameters are usually calculated based on context-specific
+empirical data, there is insufficient information to identify this value for
+the given transit system.  Lastly, the travel cost function, which is based on
+travel time, is calculated using assumed values of station spacing and vehicle
+speed.  In reality, these values would exist for a given transit network and
+would therefore not need to be calculated using a probabilistic approach.
+Subsequently, a more robust analysis could be performed for an actual transit
+system using the methods presented with empirical data.
 
 \subsection*{A word on execution}
 This project was executed as a training exercise on literate programming using 
