@@ -78,8 +78,8 @@ direction per hour.
 
 % keywords environment
 \begin{keyword}% separate with \sep
-TRB data analysis competition \sep trip distribution \sep gravity model \sep transfer penalty
-\sep public transit
+TRB data analysis competition \sep trip distribution \sep gravity model \sep 
+transfer penalty \sep public transit
 \end{keyword}
 \end{frontmatter}
 %==============================================================================

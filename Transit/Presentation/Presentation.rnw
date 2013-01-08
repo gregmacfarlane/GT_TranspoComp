@@ -1,0 +1,355 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  This Beamer template was created by Cameron Bracken.
+%%  Anyone can freely use or modify it for any purpose
+%%  without attribution.
+%%
+%%  Last Modified: January 9, 2009
+%%
+
+\documentclass[xcolor=x11names,compress]{beamer}
+\title[OD Problem]{\scshape 
+			A Monte Carlo Gravity Model Analysis of OD Volumes}
+\institute[Georgia Tech]{
+  School of Civil and Environmental Engineering\\
+  and School of Economics
+}
+\date{
+\includegraphics[width=2in]{../figure/GTOfficialLogo.pdf}
+	\\
+	\vspace{0.5cm}
+	%\today
+}
+\author[G.S. Macfarlane]{Gregory S. Macfarlane %
+												\and Candace Brakewood\\%
+												\and Jamie M. Fischer %
+												\and Alex Poznanski}
+
+
+%% General document %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{enumerate}
+\usepackage{dcolumn}
+\newcolumntype{.}{D{.}{.}{-0.8}}
+\usepackage{parskip}
+\usepackage[noae]{Sweave}
+%\usepackage{gantt}
+
+\usepackage{amsmath}
+	\def\Var{{\rm Var}\,}
+	\def\Cov{{\rm Cov}\,}
+	\def\E{{\rm E}\,}
+
+%% Beamer Layout %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\setbeamertemplate{footline}[text line]{%
+	\parbox{.5\linewidth}{\vspace*{-8pt}\insertpagenumber\hfill\insertshortauthor}}
+
+\useoutertheme[subsection=false]{miniframes}
+\useinnertheme{default}
+\usefonttheme{serif}
+\usepackage{palatino}
+
+\setbeamerfont{title like}{shape=\scshape}
+\setbeamerfont{frametitle}{shape=\scshape}
+
+\setbeamercolor*{lower separation line head}{bg=Gold3} 
+\setbeamercolor*{normal text}{fg=black,bg=white} 
+\setbeamercolor*{alerted text}{fg=red} 
+\setbeamercolor*{example text}{fg=black} 
+\setbeamercolor*{structure}{fg=black} 
+ 
+\setbeamercolor*{palette tertiary}{fg=black,bg=black!10} 
+\setbeamercolor*{palette quaternary}{fg=black,bg=black!10} 
+
+\renewcommand{\(}{\begin{columns}}
+\renewcommand{\)}{\end{columns}}
+\newcommand{\<}[1]{\begin{column}{#1}}
+\renewcommand{\>}{\end{column}}
+
+
+\usepackage{colortbl}
+
+% Poster colors
+\definecolor{navy}{cmyk}{0.662, 0.4085,0.000, 0.7216} % Navy
+\definecolor{oldgold}{cmyk}{0.00, 0.108, 0.3523, 0.3098} %Old Gold
+% chart colors
+\definecolor{lightchart}{HTML}{DEEBF7}
+\definecolor{midchart}{HTML}{9ECAE1}
+\definecolor{darkchart}{HTML}{3182BD}
+
+
+%==============================================================================
+%==============================================================================
+\begin{document}
+\SweaveOpts{echo=FALSE, warning=FALSE, message=FALSE, cache.path='cache/dep-',
+	autodep=TRUE, cache=TRUE}
+%==============================================================================
+<<setup, cache=FALSE, warning=FALSE, message=FALSE, error=FALSE, echo=FALSE>>=
+library(knitr)
+opts_chunk$set(echo=FALSE, cache=TRUE, cache.path='./cache/', autodep=TRUE)
+knit_hooks$set(crop = hook_pdfcrop)
+dep_auto()
+
+#packages used for presentation
+library(xtable)
+library(RColorBrewer)
+
+#packages used in the analysis
+library(msm)
+library(KernSmooth)
+
+#homegrown scripts
+source("../Scripts/gravity.R")
+@
+
+\setbeamertemplate{footline}{} 
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Outline}
+	\tableofcontents
+\end{frame}
+
+%------------------------------------------------------------------------------
+
+%==============================================================================
+\section{\scshape The Model}
+%------------------------------------------------------------------------------
+\subsection{Gravity Models}
+\begin{frame}{Gravity Models}
+The gravity model is perhaps the most common trip distribution model,
+\begin{equation}\label{eq:generalGravity}
+T_{ij} = \dfrac{P_i [ A_j f_{ij} k_{ij}]}
+							 {\sum_{n=1}^m A_j f_{ij} k_{ij} }
+\end{equation}
+\begin{description}
+\item{$T_{ij}$} Trips from $i$ to $j$
+\item{$P_{i}$} Origins at $i$
+\item{$A_{j}$} Destinations at $j$
+\item{$f_{ij}$} Travel cost function.
+\item{$k_{ij}$} Empirical adjustment factor.
+\end{description}
+\end{frame}
+
+\begin{frame}{Our Model}
+We use a particular negative exponential cost function described by Meyer and Miller,
+\begin{equation}\label{eq:mygravity}
+T_{ij} = \dfrac{P_i A_j t_{ij}^{-b}}
+							 {\sum_{j=1}^N A_j t_{ij}^{-b}}
+\end{equation}
+$t_{ij}$ is the holistic ``travel cost'' between $i$ and $j$.
+
+The negative exponent assures a diminishing marginal cost of travel time, and is
+typically estimated (we make a conservative assumption of $b= 1$). We replace
+$k$ with an iterative solution mechanism.
+\end{frame}
+
+
+%------------------------------------------------------------------------------
+\subsection{Assumed Parameter Values}
+\begin{frame}{Travel Cost Components}
+The travel time is
+\begin{equation}\label{eq:times}
+t_{ij} = \dfrac{d_{ij}}{s} + \lambda W_{ij}
+\end{equation}
+\begin{description}
+	\item{$d_{ij}$} Distance between $i$ and $j$
+	\item{$s$} System average speed
+	\item{$\lambda$} Transfer penalty
+	\item{$W_{ij}$} Transfer time between $i$ and $j$
+\end{description}
+
+\end{frame}
+
+% ----------------------------------------------------------------------------
+% Create distribution charts
+<<distributions>>=
+# x-values for pdf graphs
+x <- seq(0, 30, 0.01)
+
+
+# Station Distance
+mean.Distance <- -0.5
+sd.Distance = 0.5
+
+pdf.Distance <- dlnorm(x, mean.Distance, sd.Distance)
+
+# System Speed
+miles <- c(1337287,8812902,10673045,1178487,3269163,11038342,3897598,1102253,
+					1746631,991834,37631084,607058,938103,3303028,598190)
+speeds <- c(21.99,35.70,24.61,28.24,25.77,18.30,16.41,24.52,18.47,29.00,18.17,
+						20.51,19.84,19.44,18.77)
+mean.Speed <- weighted.mean(speeds, miles)
+sd.Speed <- sd(speeds)
+
+pdf.Speed <- dnorm(x, mean.Speed, sd.Speed)
+
+# Transfer Time
+mean.Transfer <- 5
+sd.Transfer <- 2
+min.Transfer <- 0
+max.Transfer <- 10
+
+pdf.Transfer <- dtnorm(x, mean.Transfer, sd.Transfer, min.Transfer, max.Transfer)
+ 
+# Transfer Penalty
+mean.TimeMultiplier <- 2.5
+sd.TimeMultiplier <- 1
+
+pdf.TimeMultiplier <- dtnorm(x, mean.TimeMultiplier, sd.TimeMultiplier, lower=1.1)
+@
+
+
+\begin{frame}{Assumed Parameter Values}
+	\begin{figure}
+<<fig_lognormal, fig.keep='last', echo=FALSE, dev='tikz', fig.height=5.2>>=
+library(RColorBrewer)
+plot(c(), c(), ylim=c(0,0.5), xlim = c(0,25),
+		 xlab="Value", ylab="Density")
+
+figcolors <- brewer.pal(4, "Set1")
+linetypes <- c("solid", "dashed", "dotted", "dotdash")	
+
+# Distance
+lines(x, pdf.Distance, col=figcolors[1], lwd=5, lty=linetypes[1])
+# Speed
+lines(x, pdf.Speed, col=figcolors[2], lwd=5, lty=linetypes[2])
+# Transfer Penalty
+lines(x, pdf.Transfer, col=figcolors[3], lwd=5, lty=linetypes[3])
+# Time Multiplier
+lines(x, pdf.TimeMultiplier, col=figcolors[4], lwd=5, lty=linetypes[4])
+
+
+legend("topright", c(paste("$d$ Distance [miles]; $\\mu=$", round(exp(mean.Distance),
+																															digits=3), sep=""),
+										 paste("$s$ Speed [mph]; $\\mu=$", round(mean.Speed, digits=3), sep=""), 
+										 paste("$W$ Transfer Time [minutes]; $\\mu=$", mean.Transfer, sep=""),
+										 paste("$\\lambda$ Transfer Time Multiplier; $\\mu=$", 
+														mean.TimeMultiplier, sep="")
+										),
+			 col=figcolors, lwd=5, bty="n", lty=linetypes)
+
+@
+	\end{figure}
+\end{frame}
+
+%==============================================================================
+\section{\scshape Simulation Results}
+<<load_data>>=
+MyData <- read.csv("../DATA/DATA.csv")
+Prods <- MyData$BOARD
+Attrs <- MyData$ALIGHT
+@
+<<MAINLOOP>>=
+output.list <- list()
+
+for(i in 1:5000){
+	set.seed(i) # change random seed with each iteration
+	TravelTime <- costRandomMatrix(meandist= mean.Distance, sddist= sd.Distance, 
+																 meantransfer=mean.Transfer, sdtransfer= sd.Transfer, 
+																 mintransfer=min.Transfer, maxtransfer=max.Transfer, 
+																 meanmultiplier=mean.TimeMultiplier, 
+																 sdmultiplier=sd.TimeMultiplier, 
+																 meanspeed=mean.Speed, sdspeed=sd.Speed)
+	output.list[[i]] <- output.cleaner(gravityModel(Prods, Attrs,
+																									TravelTime, 1, 1e-9))
+}
+
+output.matrix <- do.call(rbind, output.list)
+@
+
+
+
+%------------------------------------------------------------------------------
+\subsection{Solution Space}
+\begin{frame}{Monte Carlo Simulation}
+We take 5,000 random draws from the assumed parameter distributions and run the
+gravity model. 
+\begin{figure}
+<<outputdensities, echo=FALSE, fig.keep='high', fig.height=4, dev='tikz'>>=
+plot(c(), c(), ylim=c(0,0.03), xlim = c(10,120),
+		 xlab="Value", ylab="Density")
+
+
+
+figcolors <- brewer.pal(8, "Set1")
+maximum.pts <- vector("numeric", )
+firstqt.pts <- vector("numeric", )
+thirdqt.pts <- vector("numeric", )
+
+for(i in 1:length(figcolors)){
+	X <- bkde(output.matrix[,i])
+	lines(X, col=figcolors[i], lwd=4)
+	maximum.pts[i] <- X$x[which.max(X$y)]
+	firstqt.pts[i] <- quantile(X$x, 0.25)
+	thirdqt.pts[i] <- quantile(X$x, 0.75)
+}
+
+
+dirs <- c("W-S", "W-N", "E-S", "E-N", "S-W", "S-E", "N-W", "N-E")
+
+legend("topright", dirs, col=figcolors, lwd=4, bty="n")
+
+@
+\end{figure}
+\end{frame}
+
+\subsection{Predictions}
+\begin{frame}{Results}
+\begin{center}
+{\noindent\makebox[\textwidth]{
+<<tab_transfers, echo=FALSE, results='asis'>>=
+dirs <- c("W-S", "W-N", "E-S", "E-N", "S-W", "S-E", "N-W", "N-E")
+mins <- vector("numeric",length=8)
+maxs <- vector("numeric",length=8)
+sdev <- vector("numeric",length=8)
+avgs <- vector("numeric",length=8)
+
+
+
+
+for(i in 1:8){
+	mins[i] <- min(output.matrix[,i])
+	maxs[i] <- max(output.matrix[,i])
+	sdev[i] <- sd(output.matrix[,i])
+	avgs[i] <- mean(output.matrix[,i])
+}
+
+outputTable <- t(cbind(#mins, maxs, 
+											 sdev, avgs))
+outputTable <- rbind(outputTable,  firstqt.pts, thirdqt.pts,
+										 maximum.pts)
+colnames(outputTable) <- dirs
+rownames(outputTable) <- c(#"Minimum", "Maximum", 
+													 "Std. Dev.", "Mean",
+													 "$25^{th}$ pctl", "$75^{th}$ pctl",
+													 "Most Likely")
+
+outputTable <- t(outputTable)
+OUTXTABLE <- xtable(outputTable, caption = NULL, label=NULL)
+print.xtable(OUTXTABLE, floating=FALSE, sanitize.colnames.function=function(x){x},
+							#add.to.row=list(list(6), "\\bf ")
+						)
+@
+}}\end{center}
+
+\end{frame}
+
+%==============================================================================
+\section{\scshape Project Outcomes}
+%------------------------------------------------------------------------------
+\begin{frame}{Project Outcomes}
+An independent goal of this project was to improve our own literacy and skill in
+open-source and academic software. We used the following programs and systems:
+\begin{description}
+\item{R} 
+\item{knitr}
+\item{\LaTeX}
+\item{GitHub} 
+\end{description}
+Publicly hosted on GitHub as \texttt{GT\_TranspoComp/Transit}
+\end{frame}
+
+\end{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
