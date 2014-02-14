@@ -35,13 +35,9 @@ gravityModel <- function(productions, attractions, cost.matrix, b, TOLERANCE) {
 		# check convergence
 		if(DIFFERENCE < TOLERANCE) break
 	
-		# Calculate Trips from i to j
-		for(i in 1:length(productions)){
-			for(j in 1:length(attractions)){
-				TRIPS[i,j] = ( productions[i] * ASTAR[j] * ( cost.matrix[i,j] )^-b ) /
-												( sum(ASTAR * ( cost.matrix[i,] )^-b ));
-			}
-		}
+		# Calculate trips from i to j
+    		TRIPS <- productions %o% ASTAR * cost.matrix^(-b)/
+             		 colSums(ASTAR * ( cost.matrix )^(-b) )
 		
 		# Update attractions
 		ASTAR1 = ASTAR * ( attractions / colSums( TRIPS ))
